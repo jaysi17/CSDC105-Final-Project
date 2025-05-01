@@ -3,19 +3,26 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 
 export default function RegisterPage() {
-
-    function registerUser(ev) {
-        ev.preventDefault(); //prevent page reloading
-        axios.post('/register', {
-            name,
-            email,
-            password
-        }) //Send request to API
-    }
-
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    //What this function does is it checks is to POST(CREATE) a user from the forms to the API.
+    //It also checks if the email is already taken using try-catch error-handling.
+    async function registerUser(ev) {
+        ev.preventDefault(); //prevent page reloading
+        try {
+            await axios.post('/register', {
+                name,
+                email,
+                password
+            }) //Send request to API
+            alert('Regstration Successful. Now you can log in')
+        }
+        catch (e) {
+            alert('Registration failed. Please try again later.')
+        }
+    }
 
     return(
         <div className="mt-4 grow flex items-center justify-around">
