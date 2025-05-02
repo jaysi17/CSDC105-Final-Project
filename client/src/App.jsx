@@ -8,6 +8,8 @@ import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from './pages/RegisterPage.jsx';
 
 axios.defaults.baseURL = 'http://localhost:4000'
+axios.defaults.withCredentials = true;
+
 
 function App() {
   return (

@@ -2,12 +2,14 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken')
 require('dotenv').config();
 const User = require('./models/User.js')
 
 const app = express();
 
 const bcryptSalt = bcrypt.genSaltSync(10);
+const jwtSecret = '9f3hfreunuvnreg93jg8revufh8924f20'
 
 app.use(express.json()); //parser
 app.use(cors({
@@ -35,7 +37,29 @@ app.post('/register', async (req, res) => {
     catch (e){
         res.status(422).json(e);
     }
- 
+})
+
+app.post('/login', async (req, res) => {
+    const {email, password} = req.body;
+
+        const userDoc = await User.findOne({email})
+        if (userDoc) {
+            const passOk = bcrypt.compareSync(password, userDoc.password) //checks if the input password when encrypted be the same as the pass of the user document
+                if (passOk) {
+                    // Payload — what data to store inside the token.
+                    // Secret key — to make sure no one else can fake the token.
+                    // SYNTAX = jwt.sign(payload, secret, options, callback)
+                    jwt.sign({email:userDoc.email, _id:userDoc._id}, jwtSecret, {}, (err, token) => {
+                        if (err) throw err;
+                        res.cookie('token', token).json('correct password')
+                    })
+                }
+                else {
+                    res.status(422).json('incorrect password')
+                }
+        } else {
+            res.status(422).json('not found')
+        }
 })
 
 app.listen(4000); 
