@@ -2,16 +2,20 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
-const User = require('./models/User.js')
+const User = require('./models/User.js');
 
 const app = express();
 
 const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = '9f3hfreunuvnreg93jg8revufh8924f20'
 
+//MIDDLEWARE
+
 app.use(express.json()); //parser
+app.use(cookieParser())
 app.use(cors({
     credentials: true,
     origin: 'http://localhost:5173'
@@ -49,9 +53,12 @@ app.post('/login', async (req, res) => {
                     // Payload — what data to store inside the token.
                     // Secret key — to make sure no one else can fake the token.
                     // SYNTAX = jwt.sign(payload, secret, options, callback)
-                    jwt.sign({email:userDoc.email, _id:userDoc._id}, jwtSecret, {}, (err, token) => {
+                    jwt.sign({
+                        email:userDoc.email, 
+                        _id:userDoc._id
+                    }, jwtSecret, {}, (err, token) => {
                         if (err) throw err;
-                        res.cookie('token', token).json('correct password')
+                        res.cookie('token', token).json(userDoc)
                     })
                 }
                 else {
@@ -60,6 +67,21 @@ app.post('/login', async (req, res) => {
         } else {
             res.status(422).json('not found')
         }
+})
+
+app.get('/profile', (req, res) => {
+    const {token} = req.cookies;
+    if (token) {
+        jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+            if (err) {
+                throw err;
+            }
+            const {name, email, _id} = await User.findById(userData._id);
+            res.json({name, email, _id})
+        })
+    } else {
+     res.json(null)
+    } 
 })
 
 app.listen(4000); 

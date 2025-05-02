@@ -1,17 +1,21 @@
 import axios from "axios";
+import { useContext } from "react";
 import { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
+import { UserContext } from "../UserContext";
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [redirect, setRedirect] = useState(false);
+    const {setUser} = useContext(UserContext);
 
-    async function handlLoginSubmit(ev) {
+    async function handleLoginSubmit(ev) {
         ev.preventDefault();
 
         try {
-            await axios.post('/login', {email, password}, {withCredentials: true})
+            const {data} = await axios.post('/login', {email, password}, {withCredentials: true})
+            setUser(data)
             alert('Login Successful');
             setRedirect(true);
         } catch (e) {
@@ -27,7 +31,7 @@ export default function LoginPage() {
         <div className="mt-4 grow flex items-center justify-around">
             <div className="mb-62">
                 <h1 className="text-4xl text-center mb-4">Login</h1>
-                <form  className="max-w-md mx-auto" onSubmit={handlLoginSubmit}>
+                <form  className="max-w-md mx-auto" onSubmit={handleLoginSubmit}>
                     <input 
                         type="email" 
                         placeholder='your@email.com' 
