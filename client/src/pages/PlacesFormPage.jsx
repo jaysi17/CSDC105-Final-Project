@@ -10,7 +10,7 @@ export default function PlacesFormPage() {
     const [title, setTitle] = useState('');
     const [address, setAddress] = useState('');
     const [addedPhotos, setAddedPhotos] = useState([]);
-    const [description, setDesctiption] = useState('');
+    const [description, setDescription] = useState('');
     const [perks, setPerks] = useState([]);
     const [extraInfo, setExtraInfo] = useState('');
     const [checkIn, setCheckIn] = useState('');
@@ -22,6 +22,18 @@ export default function PlacesFormPage() {
             return;
         }
         axios.get('/places/'+id)
+            .then(response => {
+                const {data} = response;
+                setTitle(data.title);
+                setAddress(data.address);
+                setAddedPhotos(data.photos);
+                setDescription(data.description);
+                setPerks(data.perks);
+                setExtraInfo(data.extraInfo);
+                setCheckIn(data.checkIn);
+                setCheckOut(data.checkOut);
+                setMaxGuests(data.maxGuests);
+            })
     }, [id]);
 
     function inputHeader(text) {
@@ -41,14 +53,26 @@ export default function PlacesFormPage() {
         )
     }
 
-    async function addNewPlace(ev) {
+    async function savePlace(ev) {
         ev.preventDefault();
-        await axios.post('/places',             
-            {title, address, addedPhotos, 
+        const placeData = {
+            title, address, addedPhotos, 
             description, perks, extraInfo, 
             checkIn, checkOut, maxGuests
-        });
-        setRedirect(true)
+        }
+
+        if (id) {
+            //update
+            await axios.put('/places', {
+                id, ...placeData
+            });
+            setRedirect(true)
+        } 
+        else {
+            //new
+            await axios.post('/places', placeData);
+            setRedirect(true)
+        }
     }
 
     if(redirect) {
@@ -58,7 +82,7 @@ export default function PlacesFormPage() {
     return(
         <div>
             <AccountNav />
-            <form onSubmit={addNewPlace}>
+            <form onSubmit={savePlace}>
                 {preInput('Title', 'Title for your place. should be short and catchy as in advertisement')}
                 <input type="text" value={title} onChange={ev => setTitle(ev.target.value)} placeholder="title, for example: My lovely apt" />
                 
@@ -70,7 +94,7 @@ export default function PlacesFormPage() {
                 <PhotosUploader addedPhotos={addedPhotos} onChange={setAddedPhotos} />
 
                 {preInput('Description','Description of the place')}
-                <textarea value={description} onChange={ev => setDesctiption(ev.target.value)}></textarea>
+                <textarea value={description} onChange={ev => setDescription(ev.target.value)}></textarea>
 
                 {preInput('Perks', 'Select all the perks of your place')}
                 <div className="grid grid-cols-2 gap-2 mt-2 md:grid-cols-3 lg:grid-cols-6">

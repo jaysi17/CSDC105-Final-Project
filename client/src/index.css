@@ -8,6 +8,10 @@ input[type="number"] {
   @apply w-full border my-1 py-1 px-3 rounded-full md:rounded-2xl;
 }
 
+textarea {
+  height: 150px;
+}
+
 /* button {
   @apply bg-gray-300;
 } */
