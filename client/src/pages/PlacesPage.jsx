@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom"
 import Perks from "../Perks";
+import axios from "axios";
 
 export default function PlacesPage() {
     const {action} = useParams();
@@ -33,6 +34,11 @@ export default function PlacesPage() {
         )
     }
 
+    async function addPhotoByLink(ev) {
+        ev.preventDefault()
+        const {data} = await axios.post('/upload-by-link', {link: photoLink})
+    }
+
     return(
         <div>
             {action !== 'new' && (
@@ -61,7 +67,7 @@ export default function PlacesPage() {
                                 value={photoLink} 
                                 onChange={ev => setPhotoLink(ev.target.value)} 
                                 placeholder={'Add using a link ....jpg'}/>
-                            <button className="bg-gray-200 grow px-4 rounded-2xl ">Add&nbsp;Photo</button>
+                            <button onClick={addPhotoByLink} className="bg-gray-200 grow px-4 rounded-2xl ">Add&nbsp;Photo</button>
                         </div>
                         <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
                             <button className="flex justify-center gap-1 border bg-transparent rounded-2xl p-8 text-2xl text-gray-600">
@@ -87,15 +93,24 @@ export default function PlacesPage() {
                         <div className="grid sm:grid-cols-3 gap-2">
                             <div>
                                 <h3 className="mt-2 -mb-1">Check-In Time</h3>
-                                <input value={checkIn} onChange={ev => setCheckIn(ev.target.value)} type="text" placeholder="12:00"/>
+                                <input 
+                                    value={checkIn} 
+                                    onChange={ev => setCheckIn(ev.target.value)} 
+                                    type="text" placeholder="12:00"/>
                             </div>
                             <div>
                                 <h3 className="mt-2 -mb-1">Check-Out Time</h3>
-                                <input value={checkOut} onChange={ev => setCheckOut(ev.target.value)} type="text" placeholder="11:00"/>
+                                <input 
+                                    value={checkOut} 
+                                    onChange={ev => setCheckOut(ev.target.value)} 
+                                    type="text" placeholder="11:00"/>
                             </div>
                             <div>
                                 <h3 className="mt-2 -mb-1">Max Number of Guests</h3>
-                                <input value={maxGuests} onChange={ev => setMaxGuests(ev.target.value)} type="text" />
+                                <input 
+                                    value={maxGuests} 
+                                    onChange={ev => setMaxGuests(ev.target.value)} 
+                                    type="number" />
                             </div>
                         </div>
                         

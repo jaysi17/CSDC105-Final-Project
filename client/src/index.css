@@ -3,7 +3,8 @@
 input[type="text"],
 input[type="password"],
 input[type="email"],
-textarea {
+textarea,
+input[type="number"] {
   @apply w-full border my-1 py-1 px-3 rounded-full md:rounded-2xl;
 }
 
