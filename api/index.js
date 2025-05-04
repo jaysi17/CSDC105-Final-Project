@@ -14,7 +14,7 @@ const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = '9f3hfreunuvnreg93jg8revufh8924f20'
 
 //MIDDLEWARE
-
+app.use('/uploads', express.static(__dirname+'/uploads'))
 app.use(express.json()); //parser
 app.use(cookieParser())
 app.use(cors({
