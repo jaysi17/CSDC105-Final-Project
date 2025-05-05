@@ -17,6 +17,7 @@ export default function PlacesFormPage() {
     const [checkOut, setCheckOut] = useState('');
     const [maxGuests, setMaxGuests] = useState(1);
     const [redirect, setRedirect] = useState(false);
+    const [price, setPrice] = useState(100)
     useEffect(() => {
         if(!id) {
             return;
@@ -33,6 +34,7 @@ export default function PlacesFormPage() {
                 setCheckIn(data.checkIn);
                 setCheckOut(data.checkOut);
                 setMaxGuests(data.maxGuests);
+                setPrice(data.price)
             })
     }, [id]);
 
@@ -58,7 +60,7 @@ export default function PlacesFormPage() {
         const placeData = {
             title, address, photos: addedPhotos, 
             description, perks, extraInfo, 
-            checkIn, checkOut, maxGuests
+            checkIn, checkOut, maxGuests, price
         }
 
         if (id) {
@@ -109,7 +111,7 @@ export default function PlacesFormPage() {
                 <textarea value={extraInfo} onChange={ev => setExtraInfo(ev.target.value)} ></textarea>
 
                 {preInput('Check-In & Out Times','Add Check-in and Check-out times, remember to have some time window for cleaning the room between guests')}
-                <div className="grid sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     <div>
                         <h3 className="mt-2 -mb-1">Check-In Time</h3>
                         <input 
@@ -129,6 +131,13 @@ export default function PlacesFormPage() {
                         <input 
                             value={maxGuests} 
                             onChange={ev => setMaxGuests(ev.target.value)} 
+                            type="number" />
+                    </div>
+                    <div>
+                        <h3 className="mt-2 -mb-1">Price Per Night</h3>
+                        <input 
+                            value={price} 
+                            onChange={ev => setPrice(ev.target.value)} 
                             type="number" />
                     </div>
                 </div>
