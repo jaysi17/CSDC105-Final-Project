@@ -25,9 +25,12 @@ export default function PhotosUploader({addedPhotos, onChange}) {
             headers: {'Content-type':'multipart/form-data'}
         }).then(response => {
             const {data:filenames} = response;
+            console.log('Uploaded filenames:', filenames); //debugger
             onChange(prev => {
                 return [...prev, ...filenames] 
             })
+        }).catch(err => {
+            console.error('Upload failed:', err)
         })
     }
     return (

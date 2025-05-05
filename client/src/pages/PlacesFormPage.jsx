@@ -56,21 +56,25 @@ export default function PlacesFormPage() {
     async function savePlace(ev) {
         ev.preventDefault();
         const placeData = {
-            title, address, addedPhotos, 
+            title, address, photos: addedPhotos, 
             description, perks, extraInfo, 
             checkIn, checkOut, maxGuests
         }
 
         if (id) {
             //update
+            console.log("Saving place with photos:", addedPhotos);
             await axios.put('/places', {
                 id, ...placeData
             });
+            
             setRedirect(true)
         } 
         else {
             //new
+            console.log("Saving place with photos:", addedPhotos);
             await axios.post('/places', placeData);
+            
             setRedirect(true)
         }
     }
