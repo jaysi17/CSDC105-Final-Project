@@ -185,7 +185,7 @@ app.get('/places', async (req, res) => {
 
 //BOOKING FUNCTIONALITIES
 
-app.post('/booking', async (req,res) => {
+app.post('/bookings', async (req,res) => {
     const {
         place, checkIn, checkOut, numberOfGuests, name, phone, price
     } = req.body;
