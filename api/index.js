@@ -129,6 +129,11 @@ app.post('/upload-by-link', async (req, res) => {
     const {link} =  req.body;
     const newName = 'photo' + Date.now() + '.jpg';
 
+    // If it's a Cloudinary or external link, just return it as-is
+    if (link.startsWith('http') && (link.includes('cloudinary.com') || link.includes('res.cloudinary.com'))) {
+        return res.json(link);  // Return full URL
+    }
+
     await imageDownloader.image({
         url: link,
         dest: __dirname + '/uploads/' + newName
