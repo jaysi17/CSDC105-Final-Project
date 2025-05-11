@@ -6,7 +6,9 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const imageDownloader = require('image-downloader');
 const multer = require('multer');
-const fs = require('fs')
+const fs = require('fs');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 require('dotenv').config();
 
 //MODELS
@@ -27,6 +29,25 @@ app.use(cors({
     credentials: true,
     origin: 'http://localhost:5173'
 }));
+
+// Cloudinary config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Multer storage using Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'place_images', // Optional: a folder inside Cloudinary
+    allowed_formats: ['jpg', 'png', 'jpeg'],
+  },
+});
+
+const uploadToCloud = multer({ storage: storage });
+
 
 mongoose.connect(process.env.MONGO_URL);
 
@@ -117,17 +138,17 @@ app.post('/upload-by-link', async (req, res) => {
 
 const photosMiddleware = multer({dest: 'uploads'});
 
-app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
-    const uploadedFiles = [];       
+app.post('/upload', uploadToCloud.array('photos', 100), (req, res) => {
+    const uploadedFiles = req.files.map(file => file.path); // Cloudinary returns file.path as the URL    
 
-    for(let i = 0; i <req.files.length; i++) {
-        const {path, originalname} = req.files[i];
-        const parts = originalname.split('.')
-        const ext = parts[parts.length - 1];
-        const newPath = path + '.' + ext;
-        fs.renameSync(path, newPath)
-        uploadedFiles.push(newPath.split('\\').pop().split('/').pop());
-    }
+    // for(let i = 0; i <req.files.length; i++) {
+    //     const {path, originalname} = req.files[i];
+    //     const parts = originalname.split('.')
+    //     const ext = parts[parts.length - 1];
+    //     const newPath = path + '.' + ext;
+    //     fs.renameSync(path, newPath)
+    //     uploadedFiles.push(newPath.split('\\').pop().split('/').pop());
+    // }
     res.json(uploadedFiles);
 })
 
