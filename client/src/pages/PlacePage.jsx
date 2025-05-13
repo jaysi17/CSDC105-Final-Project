@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom"
 import BookingWidget from "../BookingWidget";
 import PlaceGallery from "../PlaceGallery";
-import AddressLink from "./AddressLink";
+import AddressLink from "../AddressLink";
 
 
 export default function PlacePage() {
