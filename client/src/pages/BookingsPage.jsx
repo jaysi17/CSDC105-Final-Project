@@ -23,7 +23,7 @@ export default function BookingsPage() {
                             <PlaceImg place={booking.place}/>
                         </div>
                         <div className="py-3 pr-3 grow">
-                            <h2 className="text-xl mb-2">{booking.place.title}</h2>
+                            <h2 className="text-xl">{booking.place.title}</h2>
                             
                             <div className="flex gap-2 border-t border-gray-300 mt-2 py-2"></div>
                             <BookingDates booking={booking} className="mb-2 text-gray-500" />
