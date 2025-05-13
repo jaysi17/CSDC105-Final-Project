@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+body {
+  max-width: 1200px;
+  margin: auto;
+}
+
+
 input[type="text"],
 input[type="password"],
 input[type="email"],

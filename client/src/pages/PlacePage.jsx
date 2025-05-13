@@ -35,7 +35,7 @@ export default function PlacePage() {
                     </div>
                     {place?.photos?.length > 0 && place.photos.map(photo => (
                         <div>
-                            <img src={'http://localhost:4000/uploads/' + photo} alt="" />
+                            <img src={photo.startsWith('http') ? photo : 'http://localhost:4000/uploads/' + photo} alt="" />
                         </div>
                     ))}
                 </div>             
@@ -54,7 +54,7 @@ export default function PlacePage() {
                 {place.address}
             </a>
             <div className="relative">
-                <div className="grid gap-2 grid-cols-[2fr_1fr] rounded-2xl overflow-hidden">
+                <div className="max-w-[1000px] m-auto grid gap-2 grid-cols-[2fr_1fr] rounded-2xl overflow-hidden">
                     <div>
                         {place.photos?.[0] && (
                             <div>
