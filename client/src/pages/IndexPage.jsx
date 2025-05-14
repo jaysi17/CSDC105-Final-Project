@@ -31,10 +31,10 @@ export default function IndexPage() {
 
     return (
         <>  
-            <div className="flex items-center justify-between">    
+            <div className="flex items-center justify-between flex-col md:flex-row lg:flex-row px-4 mt-10">    
                 <div className="mt-8 px-4">
-                    <h1 className="text-5xl font-bold mb-2">Find your next stay</h1>
-                    <h3 className="text-2xl">Search low prices on hotels, homes, and much more...</h3>
+                    <h1 className="font-bold mb-2 text-3xl md:text-4xl lg:text-5xl">Find your next stay</h1>
+                    <h3 className="text-xl md:text-2xl lg:text-3xl">Search low prices on hotels, homes, and much more...</h3>
                 </div>
 
                 {/* Sorting Dropdown */}
@@ -61,7 +61,7 @@ export default function IndexPage() {
                         className="group relative rounded-3xl overflow-hidden shadow-lg bg-white transition-transform hover:-translate-y-1 hover:shadow-2xl"
                     >
                         {/* Image Section */}
-                        <div className="h-56 w-full bg-gray-200 flex items-center justify-center">
+                        <div className="h-82 w-full bg-gray-200 flex items-center justify-center">
                             {place.photos?.[0] ? (
                                 <img
                                     className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
