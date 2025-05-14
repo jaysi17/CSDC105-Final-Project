@@ -4,25 +4,30 @@ import { Link, Navigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
 
 export default function LoginPage() {
+    // State to hold the email and password input values
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [redirect, setRedirect] = useState(false);
     const { setUser } = useContext(UserContext);
-
+    // Function to handle form submission
     async function handleLoginSubmit(ev) {
+        // Prevent the default form submission behavior
         ev.preventDefault();
-
+        // Send a POST request to the server with the email and password
         try {
             const { data } = await axios.post('/login', { email, password }, { withCredentials: true })
             setUser(data)
             alert('Login Successful');
             setRedirect(true);
         } catch (e) {
+            // Handle errors (e.g., incorrect email/password)
             alert('Login Failed')
         }
     }
 
+    // Check if the user is already logged in
     if (redirect) {
+        // If logged in, redirect to the home page
         return <Navigate to={'/'} />
     }
 

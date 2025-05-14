@@ -6,7 +6,12 @@ import { Link } from "react-router-dom";
 import BookingDates from "../BookingDates";
 
 export default function BookingsPage() {
+    //  State to hold the bookings data
+    //  The useState hook is used to manage the state of the bookings
     const [bookings, setBookings] = useState([]);
+
+    //  useEffect hook to fetch bookings data from the server
+    //  The empty dependency array [] means this effect runs once when the component mounts
     useEffect(() => {
         axios.get('/bookings', { withCredentials: true }).then(response => {
             setBookings(response.data)
@@ -42,6 +47,7 @@ export default function BookingsPage() {
                             </div>
                         </Link>
                     ))}
+                    {/* If there are no bookings, display a message */}
                     {(!bookings || bookings.length === 0) && (
                         <div className="text-center text-gray-500 py-12">
                             You have no bookings yet.

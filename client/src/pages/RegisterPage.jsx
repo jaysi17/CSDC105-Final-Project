@@ -3,12 +3,17 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 
 export default function RegisterPage() {
+    // State to hold the form data
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
+    // Function to handle form submission
+    // This function sends a POST request to the server with the form data
     async function registerUser(ev) {
         ev.preventDefault();
+        // Validate the form data
+        // Check if the name, email, and password fields are filled
         try {
             await axios.post('/register', {
                 name,
@@ -17,12 +22,14 @@ export default function RegisterPage() {
             });
             alert('Registration Successful. Now you can log in');
         }
+        // Handle errors (e.g., user already exists)
         catch (e) {
             alert('Registration failed. Please try again later.');
         }
     }
 
     return (
+        // Main container for the registration page
         <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 relative">
             {/* Vertical road effect */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">

@@ -5,14 +5,20 @@ import axios from "axios";
 import PlaceImg from "../PlaceImg";
 
 export default function PlacesPage() {
+    // State to hold the places data
     const [places, setPlaces] = useState([]);
+    // useEffect hook to fetch places data from the server
+    // The empty dependency array [] means this effect runs once when the component mounts
     useEffect(() => {
+        // Fetch places data from the server
         axios.get('/user-places').then(({ data }) => {
             setPlaces(data);
         });
     }, []);
 
     return (
+        // Main container for the page
+        // This div contains the account navigation and the list of places
         <div>
             <AccountNav />
             <div className="text-center mt-6">
@@ -42,6 +48,7 @@ export default function PlacesPage() {
                         </div>
                     </Link>
                 ))}
+                // If there are no places, display a message
                 {places.length === 0 && (
                     <div className="text-center text-gray-500 col-span-full py-12">
                         You have not added any places yet.

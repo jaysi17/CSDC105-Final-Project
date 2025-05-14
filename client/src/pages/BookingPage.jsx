@@ -9,10 +9,13 @@ export default function BookingPage() {
     const { id } = useParams();
     const [booking, setBooking] = useState(null);
 
+    // Fetch booking data when the component mounts or when the id changes
     useEffect(() => {
         if (id) {
             axios.get('/bookings').then(response => {
+                // Find the booking with the matching id
                 const foundBooking = response.data.find(({ _id }) => _id === id);
+                // If found, set the booking state
                 if (foundBooking) {
                     setBooking(foundBooking);
                 }
@@ -20,6 +23,8 @@ export default function BookingPage() {
         }
     }, [id]);
 
+    // If booking is not found, return an empty string
+    // This prevents rendering the component if the booking is not available
     if (!booking) {
         return '';
     }

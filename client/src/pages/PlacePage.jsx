@@ -6,14 +6,20 @@ import PlaceGallery from "../PlaceGallery";
 import AddressLink from "../AddressLink";
 
 export default function PlacePage() {
+    // Extract the place ID from the URL parameters
     const { id } = useParams();
     const [place, setPlace] = useState(null);
 
+    // Fetch place data when the component mounts or when the id changes
     useEffect(() => {
+        // If id is not available, return early
         if (!id) return;
         axios.get(`/places/${id}`).then(response => setPlace(response.data));
     }, [id]);
 
+    // If place is not found, return an empty string
+    // This prevents rendering the component if the place is not available
+    // This is useful for handling cases where the place ID is invalid or not found
     if (!place) return '';
 
     return (

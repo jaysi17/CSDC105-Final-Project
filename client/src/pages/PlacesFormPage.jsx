@@ -6,7 +6,9 @@ import AccountNav from "../AccountNav";
 import { Navigate, useParams } from "react-router-dom";
 
 export default function PlacesFormPage() {
+    // Extract the place ID from the URL parameters
     const{id} = useParams();
+    // State to hold the form data
     const [title, setTitle] = useState('');
     const [address, setAddress] = useState('');
     const [addedPhotos, setAddedPhotos] = useState([]);
@@ -18,10 +20,13 @@ export default function PlacesFormPage() {
     const [maxGuests, setMaxGuests] = useState(1);
     const [redirect, setRedirect] = useState(false);
     const [price, setPrice] = useState(100)
+    
+    // Fetch the place data when the component mounts or when the id changes
     useEffect(() => {
         if(!id) {
             return;
         }
+        // Make a GET request to fetch the place data
         axios.get('/places/'+id)
             .then(response => {
                 const {data} = response;
@@ -38,14 +43,17 @@ export default function PlacesFormPage() {
             })
     }, [id]);
 
+    // Helper functions to create input headers and descriptions
     function inputHeader(text) {
         return <h2 className="text-2xl mt-4">{text}</h2>
     }
 
+    // Helper function to create input descriptions
     function inputDescription(text) {
         return <p className="text-gray-500 text-sm">{text}</p>
     }
 
+    // Helper function to create input sections with header and description
     function preInput(header, description) {
         return(
             <>
@@ -55,6 +63,8 @@ export default function PlacesFormPage() {
         )
     }
 
+    // Function to handle form submission
+    // This function is called when the form is submitted
     async function savePlace(ev) {
         ev.preventDefault();
         const placeData = {
@@ -63,13 +73,14 @@ export default function PlacesFormPage() {
             checkIn, checkOut, maxGuests, price
         }
 
+        // If id is present, update the place
+        // Otherwise, create a new place
         if (id) {
             //update
             console.log("Saving place with photos:", addedPhotos);
             await axios.put('/places', {
                 id, ...placeData
             });
-            
             setRedirect(true)
         } 
         else {
@@ -81,11 +92,13 @@ export default function PlacesFormPage() {
         }
     }
 
+    // If redirect is true, navigate to the account places page
     if(redirect) {
         return <Navigate to={'/account/places'} />
     }
 
     return(
+        // Main container for the form
         <div>
             <AccountNav />
             <form onSubmit={savePlace}>

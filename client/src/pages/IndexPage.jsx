@@ -3,9 +3,12 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function IndexPage() {
+    // State to hold the places data
     const [places, setPlaces] = useState([]);
-
+    // useEffect hook to fetch places data from the server
+    // The empty dependency array [] means this effect runs once when the component mounts
     useEffect(() => {
+        // Fetch places data from the server    
         axios.get('/places').then(response => {
             setPlaces(response.data);
         });
@@ -19,11 +22,14 @@ export default function IndexPage() {
             </div>
             <div className="mt-10 px-4 grid gap-12 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                 {places.length > 0 && places.map(place => (
+                    // Link to the place details page
+                    // The key prop is used to uniquely identify each place in the list
                     <Link
                         to={`/place/${place._id}`}
                         key={place._id}
                         className="group relative rounded-3xl overflow-hidden shadow-lg bg-white transition-transform hover:-translate-y-1 hover:shadow-2xl"
                     >
+                        {/* Image section */}
                         <div className="h-56 w-full bg-gray-200 flex items-center justify-center">
                             {place.photos?.[0] ? (
                                 <img
