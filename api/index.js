@@ -273,5 +273,30 @@ app.get('/bookings', async (req, res) => {
     res.json(bookings);
 });
 
+// This route handles the deletion of a place by its ID
+// It verifies the JWT token and checks if the user is the owner of the place
+app.delete('/places/:id', async (req, res) => {
+    const { token } = req.cookies;
+    const { id } = req.params;
+
+    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+        if (err) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+
+        const placeDoc = await Place.findById(id);
+        if (!placeDoc) {
+            return res.status(404).json({ error: "Place not found" });
+        }
+
+        // Check if the user is the owner of the place
+        if (placeDoc.owner.toString() === userData._id) {
+            await Place.findByIdAndDelete(id);
+            res.json({ success: true });
+        } else {
+            res.status(403).json({ error: "You are not authorized to delete this place" });
+        }
+    });
+});
 
 app.listen(4000); 

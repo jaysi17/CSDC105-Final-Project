@@ -7,18 +7,33 @@ import PlaceImg from "../PlaceImg";
 export default function PlacesPage() {
     // State to hold the places data
     const [places, setPlaces] = useState([]);
-    // useEffect hook to fetch places data from the server
-    // The empty dependency array [] means this effect runs once when the component mounts
+
+    // Fetch places data from the server when the component mounts
     useEffect(() => {
-        // Fetch places data from the server
+        fetchPlaces();
+    }, []);
+
+    // Function to fetch places from the server
+    const fetchPlaces = () => {
         axios.get('/user-places').then(({ data }) => {
             setPlaces(data);
         });
-    }, []);
+    };
+
+    // Function to delete a place
+    const deletePlace = (placeId) => {
+        // Show a confirmation dialog before deleting
+        if (window.confirm("Are you sure you want to delete this place?")) {
+            axios.delete(`/places/${placeId}`).then(() => {
+                // Refresh the list of places after deletion
+                fetchPlaces();
+            }).catch((err) => {
+                console.error("Failed to delete place:", err);
+            });
+        }
+    };
 
     return (
-        // Main container for the page
-        // This div contains the account navigation and the list of places
         <div>
             <AccountNav />
             <div className="text-center mt-6">
@@ -34,8 +49,7 @@ export default function PlacesPage() {
             </div>
             <div className="mt-8 flex flex-col gap-6">
                 {places.length > 0 && places.map(place => (
-                    <Link
-                        to={`/account/places/${place._id}`}
+                    <div
                         key={place._id}
                         className="flex flex-col md:flex-row gap-4 bg-white rounded-2xl shadow hover:shadow-lg transition-shadow group p-4"
                     >
@@ -45,10 +59,23 @@ export default function PlacesPage() {
                         <div className="flex flex-col justify-between flex-1">
                             <h2 className="text-xl font-semibold mb-1 group-hover:text-[#2563eb] transition-colors">{place.title}</h2>
                             <p className="text-gray-600 text-sm mb-2 line-clamp-3">{place.description}</p>
+                            <div className="flex gap-4">
+                                <Link
+                                    to={`/account/places/${place._id}`}
+                                    className="text-blue-600 hover:underline"
+                                >
+                                    Edit
+                                </Link>
+                                <button
+                                    onClick={() => deletePlace(place._id)}
+                                    className="text-red-600 hover:underline"
+                                >
+                                    Delete
+                                </button>
+                            </div>
                         </div>
-                    </Link>
+                    </div>
                 ))}
-                // If there are no places, display a message
                 {places.length === 0 && (
                     <div className="text-center text-gray-500 col-span-full py-12">
                         You have not added any places yet.
