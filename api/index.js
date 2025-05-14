@@ -47,8 +47,28 @@ const storage = new CloudinaryStorage({
 });
 
 const uploadToCloud = multer({ storage: storage });
-//Connect to MongoDB
-mongoose.connect(process.env.MONGO_URL);
+
+// Verify required environment variables
+if (!process.env.MONGO_URL) {
+    console.error('MONGO_URL is not defined in environment variables');
+    process.exit(1);
+}
+
+// MongoDB connection with improved error handling
+mongoose.connect(process.env.MONGO_URL)
+    .then(() => {
+        console.log('Connected to MongoDB Atlas');
+    })
+    .catch(err => {
+        console.error('MongoDB connection error:', err.message);
+        process.exit(1);
+});
+
+// Basic error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Something went wrong!' });
+});
 
 // Helper function to extract user data from JWT token
 // This function verifies the token and retrieves user data
@@ -299,4 +319,7 @@ app.delete('/places/:id', async (req, res) => {
     });
 });
 
-app.listen(4000); 
+const port = process.env.PORT || 4000;
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});

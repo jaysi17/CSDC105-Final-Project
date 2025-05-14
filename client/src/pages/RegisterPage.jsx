@@ -3,17 +3,12 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 
 export default function RegisterPage() {
-    // State to hold the form data
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    // Function to handle form submission
-    // This function sends a POST request to the server with the form data
     async function registerUser(ev) {
         ev.preventDefault();
-        // Validate the form data
-        // Check if the name, email, and password fields are filled
         try {
             await axios.post('/register', {
                 name,
@@ -21,67 +16,100 @@ export default function RegisterPage() {
                 password
             });
             alert('Registration Successful. Now you can log in');
-        }
-        // Handle errors (e.g., user already exists)
-        catch (e) {
+        } catch (e) {
             alert('Registration failed. Please try again later.');
         }
     }
 
     return (
-        // Main container for the registration page
-        <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 relative">
-            {/* Vertical road effect */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-                <div className="w-16 h-full bg-gradient-to-b from-gray-900 via-gray-700 to-transparent flex flex-col items-center justify-center">
-                    <div className="w-3 h-2/3 bg-yellow-400 rounded-full shadow-lg animate-pulse mt-20"></div>
-                </div>
-            </div>
-            <div className="relative z-10 bg-white/95 rounded-none md:rounded-3xl shadow-2xl px-4 md:px-10 py-12 w-full max-w-md flex flex-col items-center">
-                {/* Car logo */}
-                <div className="mb-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 48 48" className="w-16 h-16 text-[#2563eb] mx-auto">
-                        <rect x="8" y="20" width="32" height="12" rx="4" fill="#2563eb" />
-                        <rect x="12" y="16" width="24" height="8" rx="3" fill="#fff" />
-                        <circle cx="14" cy="34" r="4" fill="#222" />
-                        <circle cx="34" cy="34" r="4" fill="#222" />
-                    </svg>
-                </div>
-                <h1 className="text-4xl font-extrabold text-[#2563eb] mb-2 text-center tracking-wide">Register</h1>
-                <form className="w-full" onSubmit={registerUser}>
-                    <input
-                        type="text"
-                        placeholder="John Doe"
-                        value={name}
-                        onChange={ev => setName(ev.target.value)}
-                        className="w-full mb-4 px-4 py-3 rounded-xl border border-gray-300 focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/30 outline-none transition"
-                    />
-                    <input
-                        type="email"
-                        placeholder="your@email.com"
-                        value={email}
-                        onChange={ev => setEmail(ev.target.value)}
-                        className="w-full mb-4 px-4 py-3 rounded-xl border border-gray-300 focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/30 outline-none transition"
-                    />
-                    <input
-                        type="password"
-                        placeholder="password"
-                        value={password}
-                        onChange={ev => setPassword(ev.target.value)}
-                        className="w-full mb-6 px-4 py-3 rounded-xl border border-gray-300 focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/30 outline-none transition"
-                    />
-                    <button
-                        className="w-full py-3 rounded-xl bg-[#2563eb] text-white font-semibold text-lg shadow hover:bg-blue-700 transition-colors"
-                    >
-                        Register
-                    </button>
-                    <div className="text-center py-4 text-gray-500">
-                        Already have an account?{' '}
-                        <Link to={'/login'} className="underline text-[#2563eb] font-medium hover:text-blue-800 transition-colors">
-                            Login
-                        </Link>
+        <div className="min-h-screen flex bg-[#003580]">
+            <div className="w-full flex flex-col lg:flex-row">
+                <div className="flex-1 p-8 lg:p-16 text-white">
+                    <h1 className="text-4xl lg:text-5xl font-bold mb-8">Join StayConnect.com</h1>
+                    <p className="text-xl mb-12">Start your journey with us and discover the world's best accommodations.</p>
+                    
+                    <div className="space-y-6">
+                        <div className="flex items-start gap-4">
+                            <div className="mt-1">
+                                <svg viewBox="0 0 24 24" className="w-6 h-6 text-green-400"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-semibold mb-2">Easy to Use</h3>
+                                <p className="text-gray-200">List your property in minutes with our simple interface</p>
+                            </div>
+                        </div>
+                        
+                        <div className="flex items-start gap-4">
+                            <div className="mt-1">
+                                <svg viewBox="0 0 24 24" className="w-6 h-6 text-green-400"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-semibold mb-2">Global Reach</h3>
+                                <p className="text-gray-200">Connect with millions of potential guests worldwide</p>
+                            </div>
+                        </div>
+                        
+                        <div className="flex items-start gap-4">
+                            <div className="mt-1">
+                                <svg viewBox="0 0 24 24" className="w-6 h-6 text-green-400"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-semibold mb-2">Secure Payments</h3>
+                                <p className="text-gray-200">Safe and reliable payment processing for your peace of mind</p>
+                            </div>
+                        </div>
                     </div>
-                </form>
+                </div>
+
+                <div className="w-full lg:w-[600px] p-8 bg-white flex items-center justify-center">
+                    <div className="w-full max-w-lg">
+                        <h2 className="text-3xl font-bold text-[#262626] mb-4">Create an account</h2>
+                        <p className="text-gray-600 mb-8">Join our community of property owners and start earning today</p>
+                        
+                        <form className="space-y-6" onSubmit={registerUser}>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Full name</label>
+                                <input
+                                    type="text"
+                                    value={name}
+                                    onChange={ev => setName(ev.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={ev => setEmail(ev.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={ev => setPassword(ev.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
+                            <button className="w-full py-3 bg-[#006CE4] hover:bg-[#003580] text-white font-medium rounded-md transition-colors">
+                                Get started now
+                            </button>
+                            <div className="text-sm text-gray-500 mt-6">
+                                By creating an account, you agree to our <a href="#" className="text-[#006CE4] hover:underline">Terms of Service</a> and acknowledge our <a href="#" className="text-[#006CE4] hover:underline">Privacy Policy</a>
+                            </div>
+                        </form>
+                        
+                        <div className="mt-8 pt-8 border-t text-center">
+                            <p className="text-gray-600">Already have an account?</p>
+                            <Link to={'/login'} className="text-[#006CE4] font-medium hover:underline block mt-2">
+                                Sign in to your account
+                            </Link>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

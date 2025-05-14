@@ -2,86 +2,89 @@ import axios from "axios";
 import { useContext, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
+import JCLogo from '../assets/JC.png';
 
 export default function LoginPage() {
-    // State to hold the email and password input values
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [redirect, setRedirect] = useState(false);
     const { setUser } = useContext(UserContext);
-    // Function to handle form submission
+
     async function handleLoginSubmit(ev) {
-        // Prevent the default form submission behavior
         ev.preventDefault();
-        // Send a POST request to the server with the email and password
         try {
-            const { data } = await axios.post('/login', { email, password }, { withCredentials: true })
-            setUser(data)
+            const { data } = await axios.post('/login', { email, password }, { withCredentials: true });
+            setUser(data);
             alert('Login Successful');
             setRedirect(true);
         } catch (e) {
-            // Handle errors (e.g., incorrect email/password)
-            alert('Login Failed')
+            alert('Login Failed');
         }
     }
 
-    // Check if the user is already logged in
     if (redirect) {
-        // If logged in, redirect to the home page
-        return <Navigate to={'/'} />
+        return <Navigate to={'/'} />;
     }
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 relative">
-            {/* Vertical road effect */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-                <div className="w-16 h-full bg-gradient-to-b from-gray-900 via-gray-700 to-transparent flex flex-col items-center justify-center">
-                    <div className="w-3 h-2/3 bg-yellow-400 rounded-full shadow-lg animate-pulse mt-20"></div>
-                </div>
-            </div>
-            <div className="relative z-10 bg-white/95 rounded-none md:rounded-3xl shadow-2xl px-4 md:px-10 py-12 w-full max-w-md flex flex-col items-center">
-                {/* Car icon */}
-                <div className="mb-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 48 48" className="w-16 h-16 text-[#2563eb] mx-auto">
-                        <rect x="8" y="20" width="32" height="12" rx="4" fill="#2563eb" />
-                        <rect x="12" y="16" width="24" height="8" rx="3" fill="#fff" />
-                        <circle cx="14" cy="34" r="4" fill="#222" />
-                        <circle cx="34" cy="34" r="4" fill="#222" />
-                    </svg>
-                </div>
-                <h1 className="text-4xl font-extrabold text-[#2563eb] mb-2 text-center tracking-wide">CarBook Login</h1>
-                <p className="text-gray-600 mb-6 text-center">Welcome back, driver! Please sign in to your garage.</p>
-                <form className="w-full" onSubmit={handleLoginSubmit}>
-                    <input
-                        type="email"
-                        placeholder="your@email.com"
-                        value={email}
-                        onChange={ev => setEmail(ev.target.value)}
-                        className="w-full mb-4 px-4 py-3 rounded-xl border border-gray-300 focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/30 outline-none transition"
-                    />
-                    <input
-                        type="password"
-                        placeholder="password"
-                        value={password}
-                        onChange={ev => setPassword(ev.target.value)}
-                        className="w-full mb-6 px-4 py-3 rounded-xl border border-gray-300 focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/30 outline-none transition"
-                    />
-                    <button
-                        className="w-full py-3 rounded-xl bg-[#2563eb] text-white font-semibold text-lg shadow hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M13 5v6h6" />
-                        </svg>
-                        Start Your Engine
-                    </button>
-                    <div className="text-center py-4 text-gray-500">
-                        Don't have an account yet?{' '}
-                        <Link to={'/register'} className="underline text-[#2563eb] font-medium hover:text-blue-800 transition-colors">
-                            Register now
+        <div className="min-h-screen flex bg-[#003580]">
+            {/* Blue space left */}
+            <div className="hidden lg:block lg:w-[calc(50%-300px)]" />
+            
+            {/* Centered white login section */}
+            <div className="w-full lg:w-[600px] bg-white flex items-center">
+                <div className="w-full max-w-lg mx-auto p-8">
+                    <div className="mb-8 flex justify-center">
+                        <img 
+                            src={JCLogo}
+                            alt="JC Logo"
+                            className="h-16 w-auto"
+                        />
+                    </div>
+                    <div className="mb-8">
+                        <h1 className="text-3xl font-bold text-[#262626] mb-2">Welcome back</h1>
+                        <p className="text-gray-600">Sign in to manage your account</p>
+                    </div>
+                    <form className="w-full space-y-4" onSubmit={handleLoginSubmit}>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={ev => setEmail(ev.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={ev => setPassword(ev.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            />
+                        </div>
+                        <button className="w-full py-3 bg-[#006CE4] hover:bg-[#003580] text-white font-medium rounded-md transition-colors">
+                            Sign in
+                        </button>
+                        <div className="text-sm text-center">
+                            <a href="#" className="text-[#006CE4] hover:underline">Forgot password?</a>
+                        </div>
+                    </form>
+                    <div className="mt-6 text-center">
+                        <p className="text-gray-600 mb-4">Don't have an account yet?</p>
+                        <Link to={'/register'} className="text-[#006CE4] font-medium hover:underline">
+                            Create an account
                         </Link>
                     </div>
-                </form>
+                    <div className="mt-8 pt-8 border-t text-xs text-gray-500 text-center">
+                        By signing in, you agree to our <a href="#" className="text-[#006CE4] hover:underline">Terms and Conditions</a> and <a href="#" className="text-[#006CE4] hover:underline">Privacy Statement</a>
+                    </div>
+                </div>
             </div>
+            
+            {/* Blue space right */}
+            <div className="hidden lg:block lg:w-[calc(50%-300px)]" />
         </div>
     );
 }
