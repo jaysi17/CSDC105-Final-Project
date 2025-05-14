@@ -19,7 +19,7 @@ const Booking = require('./models/Booking.js');
 const app = express();
 
 const bcryptSalt = bcrypt.genSaltSync(10);
-const jwtSecret = '9f3hfreunuvnreg93jg8revufh8924f20'
+const jwtSecret = process.env.JWT_SECRET
 
 //MIDDLEWARE
 app.use('/uploads', express.static(__dirname+'/uploads'))
@@ -27,7 +27,7 @@ app.use(express.json()); //parser
 app.use(cookieParser())
 app.use(cors({
     credentials: true,
-    origin: 'http://localhost:5173'
+    origin: 'https://stayconnect-eight.vercel.app/'
 }));
 
 // Cloudinary configuration for image uploads

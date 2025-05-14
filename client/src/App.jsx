@@ -17,7 +17,7 @@ import BookingPage from './pages/BookingPage.jsx';
 
 // Set the base URL for axios requests
 // This is the URL of the backend server
-axios.defaults.baseURL = 'http://localhost:4000'
+axios.defaults.baseURL = 'https://stayconnect.onrender.com';
 axios.defaults.withCredentials = true;
 
 function App() {
