@@ -2,7 +2,7 @@ import axios from "axios";
 import { useContext, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
-import JCLogo from '../assets/JC.png';
+import JCLogo from '../assets/jc-icon.png';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -38,7 +38,7 @@ export default function LoginPage() {
                         <img 
                             src={JCLogo}
                             alt="JC Logo"
-                            className="h-16 w-auto"
+                            className="h-56 w-auto"
                         />
                     </div>
                     <div className="mb-8">
