@@ -1,17 +1,15 @@
 import { useContext, useState } from "react"
 import { UserContext } from "../UserContext"
 import { Navigate, useParams } from "react-router-dom"
-import { Link } from "react-router-dom"
 import axios from "axios"
 import PlacesPage from "./PlacesPage"
 import AccountNav from "../AccountNav"
 
-
 export default function ProfilePage() {
-    const {ready, user, setUser} = useContext(UserContext)
+    const { ready, user, setUser } = useContext(UserContext)
     const [redirect, setRedirect] = useState(null)
 
-    let {subpage} = useParams()
+    let { subpage } = useParams()
     if (subpage === undefined) {
         subpage = 'profile';
     }
@@ -22,7 +20,7 @@ export default function ProfilePage() {
         setUser(null)
     }
 
-    if(!ready)  {
+    if (!ready) {
         return 'Loading. . .';
     }
 
@@ -30,24 +28,35 @@ export default function ProfilePage() {
         return <Navigate to={'/login'} />
     }
 
-    if(redirect) {
+    if (redirect) {
         return <Navigate to={redirect} />
     }
 
-
     return (
-        <div>
+        <div className="min-h-screen bg-gray-50 pb-10">
             <AccountNav />
-            {subpage === 'profile' && (
-                <div className="text-center max-w-lg mx-auto">
-                    Logged in as {user.name} ({user.email}) <br />
-                    <button onClick={logout} className="primary p-2 w-full text-white rounded-2xl bg-[#F5385D]">Logout</button>
-                </div>
-            )}
+            <div className="max-w-4xl mx-auto mt-8 px-4">
+                {subpage === 'profile' && (
+                    <div className="flex flex-1 justify-center items-start">
+                        <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md text-center mt-8 mx-auto">
+                            <div className="mb-4">
+                                <div className="text-2xl font-bold mb-1 text-[#2563eb]">{user.name}</div>
+                                <div className="text-gray-600 mb-6">{user.email}</div>
+                            </div>
+                            <button
+                                onClick={logout}
+                                className="w-full py-3 rounded-xl bg-[#2563eb] text-white font-semibold text-lg shadow hover:bg-blue-700 transition-colors"
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                )}
 
-            {subpage === 'places' && (
-                <PlacesPage />
-            )}
+                {subpage === 'places' && (
+                    <PlacesPage />
+                )}
+            </div>
         </div>
     )
 }

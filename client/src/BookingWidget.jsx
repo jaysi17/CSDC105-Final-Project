@@ -87,7 +87,7 @@ export default function BookingWidget({place}) {
                     </div>
                 )}
             </div>
-            <button onClick={bookThisPlace} className="bg-[#F5385D] text-white py-2 px-6 rounded-full w-full mt-4">
+            <button onClick={bookThisPlace} className="bg-[#2563eb] text-white py-2 px-6 rounded-full w-full mt-4 hover:bg-blue-700 transition-colors">
                 Book this place
                 {numberOfNights > 0 && (
                     <span> for ₱{numberOfNights * place.price}</span>

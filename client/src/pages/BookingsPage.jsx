@@ -13,27 +13,41 @@ export default function BookingsPage() {
         })
     }, [])
 
-    return(
-        <div>
+    return (
+        <div className="min-h-screen bg-gray-50 pb-10">
             <AccountNav />
-            <div>
-                {bookings?.length > 0 && bookings.map(booking => (
-                    <Link to={`/account/bookings/${booking._id}`} className="flex gap-4 bg-gray-200 rounded-2xl overflow-hidden ">
-                        <div className="w-48">
-                            <PlaceImg place={booking.place}/>
-                        </div>
-                        <div className="py-3 pr-3 grow">
-                            <h2 className="text-xl">{booking.place.title}</h2>
-                            
-                            <div className="flex gap-2 border-t border-gray-300 mt-2 py-2"></div>
-                            <BookingDates booking={booking} className="mb-2 text-gray-500" />
-                            <div className="text-2xl font-semibold mt-2">
-                                Total price: ₱{booking.price}
+            <div className="max-w-4xl mx-auto mt-8 px-4">
+                <h1 className="text-3xl font-bold mb-6">Your Bookings</h1>
+                <div className="space-y-6">
+                    {bookings?.length > 0 && bookings.map(booking => (
+                        <Link
+                            to={`/account/bookings/${booking._id}`}
+                            key={booking._id}
+                            className="flex flex-col md:flex-row gap-6 bg-white rounded-2xl overflow-hidden shadow transition-shadow group"
+                        >
+                            <div className="md:w-48 w-full h-48 md:h-auto flex-shrink-0">
+                                <PlaceImg place={booking.place} className="object-cover w-full h-full" />
                             </div>
-
+                            <div className="flex flex-col justify-between py-4 pr-4 flex-1">
+                                <div>
+                                    <h2 className="text-2xl font-semibold mb-1 transition-colors group-hover:text-[#2563eb]">
+                                        {booking.place.title}
+                                    </h2>
+                                    <BookingDates booking={booking} className="mb-2 text-gray-500" />
+                                </div>
+                                <div className="mt-4 flex items-center gap-2">
+                                    <span className="text-lg font-medium text-gray-700">Total price:</span>
+                                    <span className="text-2xl font-bold transition-colors group-hover:text-[#2563eb]">₱{booking.price}</span>
+                                </div>
+                            </div>
+                        </Link>
+                    ))}
+                    {(!bookings || bookings.length === 0) && (
+                        <div className="text-center text-gray-500 py-12">
+                            You have no bookings yet.
                         </div>
-                    </Link>
-                ))}
+                    )}
+                </div>
             </div>
         </div>
     )
