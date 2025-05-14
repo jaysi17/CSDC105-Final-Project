@@ -1,18 +1,24 @@
 export default function Perks({selected, onChange}) {
 
+    // Function to handle checkbox click events
     function handleCbClick(ev) {
-        
+        // Prevent the default behavior of the checkbox
         const {checked, name} = ev.target;
 
+        // If the checkbox is checked, add the perk to the selected array
         if (checked) {
             onChange([...selected, name]); 
+        // If the checkbox is unchecked, remove the perk from the selected array
         } else {
             onChange([...selected.filter(selectedName => selectedName !== name)])    
         }
     }
 
     return (
-        <>
+        // Main container for the perks section
+        // This div contains the checkboxes for different perks
+        // Each checkbox is represented by a label element
+        <>  
             <label className="border p-4 flex rounded-2xl gap-2 items-center cursor-pointer">
                 <input type="checkbox" checked={selected.includes('wifi')} name="wifi" onChange={handleCbClick}/>
                 

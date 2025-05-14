@@ -1,8 +1,11 @@
 import { useState } from "react"
 
 export default function PlaceGallery({place}) {
+    // State to manage the visibility of all photos
     const [showAllPhotos, setShowAllPhotos] = useState(false)
 
+    // Function to handle the click event for showing all photos
+    // This function sets the state to true, which triggers the display of all photos
     if(showAllPhotos) {
         return (
             <div className="absolute inset-0 bg-black text-white min-h-screen">
@@ -26,6 +29,9 @@ export default function PlaceGallery({place}) {
         )
     }
 
+    // Render the main gallery component
+    // This component displays the first three photos of the place
+    // and a button to show all photos
     return(
         <div className="relative">
             <div className="max-w-[1000px] m-auto grid gap-2 grid-cols-[2fr_1fr] rounded-2xl overflow-hidden">

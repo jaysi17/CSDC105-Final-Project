@@ -3,24 +3,37 @@ import { useState } from "react";
 
 
 export default function PhotosUploader({addedPhotos, onChange}) {
+    //  useState hook to manage the state of the photo link input
+    //  This state holds the value of the photo link input field
     const [photoLink, setPhotoLink] = useState('');
     
+    //  Function to add a photo using a link
+    //  This function is called when the user clicks the "Add Photo" button
     async function addPhotoByLink(ev) {
         ev.preventDefault()
+        //  Validate the photo link
         const {data:filename} = await axios.post('/upload-by-link', {link: photoLink})
+        //  Check if the filename is valid
         onChange(prev => {
             return [...prev, filename] 
         })
         setPhotoLink('')
     }
- 
+    
+    //  Function to upload photos
+    //  This function is called when the user selects files to upload
     function uploadPhoto(ev) {
+        //  Prevent the default behavior of the input element
         const files = ev.target.files
         const data = new FormData();
 
+        //  Loop through the selected files and append them to the FormData object
         for(let i = 0 ; i < files.length ; i++) {
             data.append('photos', files[i])
         }
+
+        //  Send a POST request to the server to upload the photos
+        //  The server will respond with the filenames of the uploaded photos
         axios.post('/upload', data, {
             headers: {'Content-type':'multipart/form-data'}
         }).then(response => {
@@ -30,21 +43,28 @@ export default function PhotosUploader({addedPhotos, onChange}) {
                 return [...prev, ...filenames] 
             })
         }).catch(err => {
+            //  Handle errors (e.g., file upload failed)
             console.error('Upload failed:', err)
         })
     }
 
+    //  Function to remove a photo
+    //  This function is called when the user clicks the remove button on a photo
     function removePhoto(ev, filename) {
         ev.preventDefault()
         onChange([...addedPhotos.filter(photo => photo !== filename)])
     }
 
+    //  Function to select a photo as the main photo
+    //  This function is called when the user clicks the select button on a photo
     function selectAsMainPhoto(ev, filename) {
         ev.preventDefault()
         onChange([filename, ...addedPhotos.filter(photo => photo !== filename)])
     }
 
     return (
+        //  Render the photo uploader component
+        //  This component allows the user to upload photos and manage them
         <>
             <div className="flex gap-2">
                 <input 

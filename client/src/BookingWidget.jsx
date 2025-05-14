@@ -5,6 +5,8 @@ import { Navigate } from "react-router-dom";
 import { UserContext } from "./UserContext";
 
 export default function BookingWidget({place}) {
+    //  useState hooks to manage the state of the booking widget
+    //  These states include check-in date, check-out date, number of guests, name, phone number, and redirect URL
     const [checkIn,setCheckIn] = useState('');
     const [checkOut, setCheckOut] = useState('');
     const [numberOfGuests, setNumberOfGuests] = useState(1);
@@ -13,17 +15,26 @@ export default function BookingWidget({place}) {
     const [redirect, setRedirect] = useState('');
     const {user} = useContext(UserContext);
 
+    //  useEffect hook to set the name state when the user context changes
+    //  This ensures that the name field is pre-filled with the user's name if they are logged in
     useEffect(()=> {
+        //  If the user is logged in, set the name state to the user's name
         if (user) {
             setName(user.name)
         }
     }, [user])
 
+    //  Function to calculate the number of nights based on the check-in and check-out dates
+    //  This function uses the differenceInCalendarDays function from date-fns to calculate the difference in days
+    //  between the two dates
     let numberOfNights = 0;
+    //  If both check-in and check-out dates are provided, calculate the number of nights
     if (checkIn && checkOut) {
         numberOfNights = differenceInCalendarDays(new Date(checkOut), new Date(checkIn))
     }
 
+    //  Function to handle the booking process
+    //  This function sends a POST request to the server to create a new booking
     async function bookThisPlace() {
         const response = await axios.post('/bookings', {
             checkIn, checkOut, numberOfGuests, name, phone,
@@ -34,10 +45,13 @@ export default function BookingWidget({place}) {
         setRedirect(`/account/bookings/${bookingId}`)
     }
 
+    //  If the user is not logged in and the redirect state is not set
+    //  redirect them to the login page
     if(redirect) {
         return <Navigate to={redirect}/>
     }
 
+    //  Render the booking widget
     return (
         <div className= "bg-white shadow p-4 rounded-2xl">
             <div className="text-center text-2xl">

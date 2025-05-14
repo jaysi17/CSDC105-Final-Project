@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import axios from 'axios';
 import './App.css'
 //ROUTES
-import Layout from './Layout.jsx';
+import Layout from './Layout.jsx'; 
 import IndexPage from "./pages/IndexPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from './pages/RegisterPage.jsx';
@@ -14,9 +14,11 @@ import PlacePage from './pages/PlacePage.jsx';
 import BookingsPage from './pages/BookingsPage.jsx';
 import BookingPage from './pages/BookingPage.jsx';
 
+
+// Set the base URL for axios requests
+// This is the URL of the backend server
 axios.defaults.baseURL = 'http://localhost:4000'
 axios.defaults.withCredentials = true;
-
 
 function App() {
   return (
@@ -39,4 +41,4 @@ function App() {
   )
 }
 
-export default App
+export default Apps

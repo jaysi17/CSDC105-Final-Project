@@ -1,13 +1,20 @@
 import { Link, useLocation } from "react-router-dom"
 
 export default function AccountNav() {
+    // useLocation hook to get the current location 
+    // This allows us to access the current URL and determine which subpage is active
     const {pathname} = useLocation();
+
+    // Split the pathname to get the subpage
     let subpage = pathname.split('/')?.[2];
 
+    // If the subpage is not provided, default it to 'profile'
     if(subpage === undefined) {
         subpage = 'profile';
     }
 
+    // Function to generate the classes for the links
+    // This function takes a type parameter and returns a string of classes
     function linkClasses(type=null) {
         let classes = 'inline-flex items-center gap-2 py-2 px-6 rounded-full text-base font-semibold transition-all duration-200';
 
