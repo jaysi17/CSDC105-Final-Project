@@ -5,31 +5,62 @@ import { Link } from "react-router-dom";
 export default function IndexPage() {
     // State to hold the places data
     const [places, setPlaces] = useState([]);
-    // useEffect hook to fetch places data from the server
-    // The empty dependency array [] means this effect runs once when the component mounts
+    // State to hold the selected sort option
+    const [sortOption, setSortOption] = useState("oldest"); // Default sort option
+
+    // Fetch places data from the server
     useEffect(() => {
-        // Fetch places data from the server    
         axios.get('/places').then(response => {
             setPlaces(response.data);
         });
     }, []);
 
+    // Sort places based on the selected option
+    // The sort function is called whenever the sortOption changes
+    // The sortedPlaces array is created by copying the original places array and sorting it
+    const sortedPlaces = [...places].sort((a, b) => {
+        if (sortOption === "priceLowToHigh") {
+            return a.price - b.price; // Sort by price (low to high)
+        } else if (sortOption === "priceHighToLow") {
+            return b.price - a.price; // Sort by price (high to low)
+        } else if (sortOption === "oldest") {
+            return new Date(a.createdAt) - new Date(b.createdAt); // Sort by oldest
+        }
+        return 0;
+    }, {timestamps: true});
+
     return (
-        <>
-            <div className="mt-8 px-4">
-                <h1 className="text-5xl font-bold mb-2 ">Find your next stay</h1>
-                <h3 className="text-2xl">Search low prices on hotels, homes and much more...</h3>
+        <>  
+            <div className="flex items-center justify-between">    
+                <div className="mt-8 px-4">
+                    <h1 className="text-5xl font-bold mb-2">Find your next stay</h1>
+                    <h3 className="text-2xl">Search low prices on hotels, homes, and much more...</h3>
+                </div>
+
+                {/* Sorting Dropdown */}
+                <div className="mt-4 px-4">
+                    <label htmlFor="sort" className="mr-2 font-semibold">Sort by:</label>
+                    <select
+                        id="sort"
+                        value={sortOption}
+                        onChange={(e) => setSortOption(e.target.value)}
+                        className="border rounded-lg px-3 py-2">
+                        <option value="oldest">Oldest</option>
+                        <option value="priceLowToHigh">Price: Low to High</option>
+                        <option value="priceHighToLow">Price: High to Low</option>
+                    </select>
+                </div>
             </div>
+
+            {/* Places Grid */}
             <div className="mt-10 px-4 grid gap-12 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {places.length > 0 && places.map(place => (
-                    // Link to the place details page
-                    // The key prop is used to uniquely identify each place in the list
+                {sortedPlaces.length > 0 && sortedPlaces.map(place => (
                     <Link
                         to={`/place/${place._id}`}
                         key={place._id}
                         className="group relative rounded-3xl overflow-hidden shadow-lg bg-white transition-transform hover:-translate-y-1 hover:shadow-2xl"
                     >
-                        {/* Image section */}
+                        {/* Image Section */}
                         <div className="h-56 w-full bg-gray-200 flex items-center justify-center">
                             {place.photos?.[0] ? (
                                 <img
