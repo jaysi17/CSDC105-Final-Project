@@ -9,11 +9,10 @@ A Full-stack Booking App built using the **MERN stack** (MongoDB, Express.js, Re
 2. [Features](#features)
 3. [Technologies Used](#technologies-used)
 4. [Setup Instructions](#setup-instructions)
-5. [Folder Structure](#folder-structure)
-6. [Usage](#usage)
-7. [API Endpoints](#api-endpoints)
-8. [Future Improvements](#future-improvements)
-9. [Full Documentation](#full-documentation)
+5. [Usage](#usage)
+6. [API Endpoints](#api-endpoints)
+7. [Future Improvements](#future-improvements)
+8. [Full Documentation](#full-documentation)
 
 ---
 
@@ -104,10 +103,6 @@ This app is designed to be user-friendly and responsive, making it accessible on
     ```bash
     cd client
     npm run dev
-
----
-
-<pre> ## Folder Structure ```plaintext booking-app/ ├── api/ # Backend server │ ├── models/ # Database schemas │ │ ├── Booking.js # Booking model │ │ ├── Place.js # Vehicle listing model │ │ └── User.js # User model │ ├── uploads/ # Image storage │ ├── .env # Environment variables │ ├── index.js # Server entry point │ └── package.json # Backend dependencies │ └── client/ # Frontend React app ├── src/ │ ├── pages/ # Route components │ │ ├── BookingPage.jsx │ │ ├── BookingsPage.jsx │ │ ├── IndexPage.jsx │ │ ├── LoginPage.jsx │ │ ├── PlacePage.jsx │ │ ├── PlacesFormPage.jsx │ │ ├── PlacesPage.jsx │ │ ├── ProfilePage.jsx │ │ └── RegisterPage.jsx │ ├── components/ # Reusable components │ │ ├── BookingWidget.jsx │ │ ├── Header.jsx │ │ ├── Layout.jsx │ │ ├── Perks.jsx │ │ └── PhotosUploader.jsx │ ├── context/ # React context │ │ └── UserContext.jsx │ ├── App.jsx # Root component │ └── main.jsx # Entry point └── config/ # Frontend config files ├── vite.config.js └── tailwind.config.js ``` </pre>
 
 ---
 
