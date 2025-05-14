@@ -49,7 +49,7 @@ export default function PlacePage() {
                         </div>
                     </div>
                     <div>
-                        <div className="sticky top-24">
+                        <div>
                             <BookingWidget place={place} />
                         </div>
                     </div>
