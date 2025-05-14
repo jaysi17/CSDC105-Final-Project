@@ -12,8 +12,8 @@ A Full-stack Booking App built using the **MERN stack** (MongoDB, Express.js, Re
 5. [Folder Structure](#folder-structure)
 6. [Usage](#usage)
 7. [API Endpoints](#api-endpoints)
-8. [Screenshots](#screenshots)
-9. [Future Improvements](#future-improvements)
+8. [Future Improvements](#future-improvements)
+9. [Full Documentation](#full-documentation)
 
 ---
 
@@ -49,7 +49,7 @@ This app is designed to be user-friendly and responsive, making it accessible on
 - **Responsive Design**: Fully responsive UI for desktop and mobile.
 - **Dynamic Photo Galleries**: View and manage photos for each place.
 - **Secure API**: Backend API with authentication and authorization.
-
+- **Sorting Places**: Sort places by price (low to high, high to low) or by date (oldest only) for better user experience.
 ---
 
 ## Technologies Used
@@ -105,20 +105,194 @@ This app is designed to be user-friendly and responsive, making it accessible on
     cd client
     npm run dev
 
-### **Folder Structure**
-booking-app/
-├── api/                     # Backend folder
-│   ├── models/              # Mongoose models (User, Place, Booking)
-│   ├── uploads/             # Uploaded photos (if using local storage)
-│   ├── index.js             # Main backend server file
-│   └── .env                 # Environment variables
-├── client/                  # Frontend folder
-│   ├── src/
-│   │   ├── pages/           # React pages (e.g., LoginPage, PlacesPage)
-│   │   ├── App.jsx          # Main React app file
-│   │   ├── index.css        # Global styles
-│   │   ├── main.jsx         # React entry point
-|   |   └── Other Components # Reusable react components
-│   └── public/              # Static assets
-└── README.md                # Project documentation
+---
 
+## Folder Structure
+<pre lang="markdown"><code>```plaintext booking-app/ ├── api/ # Backend server │ ├── models/ # Database schemas │ │ ├── Booking.js # Booking model │ │ ├── Place.js # Vehicle listing model │ │ └── User.js # User model │ ├── uploads/ # Image storage │ ├── .env # Environment variables │ ├── index.js # Server entry point │ └── package.json # Backend dependencies │ └── client/ # Frontend React app ├── src/ │ ├── pages/ # Route components │ │ ├── BookingPage.jsx │ │ ├── BookingsPage.jsx │ │ ├── IndexPage.jsx │ │ ├── LoginPage.jsx │ │ ├── PlacePage.jsx │ │ ├── PlacesFormPage.jsx │ │ ├── PlacesPage.jsx │ │ ├── ProfilePage.jsx │ │ └── RegisterPage.jsx │ ├── components/ # Reusable components │ │ ├── BookingWidget.jsx │ │ ├── Header.jsx │ │ ├── Layout.jsx │ │ ├── Perks.jsx │ │ └── PhotosUploader.jsx │ ├── context/ # React context │ │ └── UserContext.jsx │ ├── App.jsx # Root component │ └── main.jsx # Entry point └── config/ # Frontend config files ├── vite.config.js └── tailwind.config.js ```</code></pre>
+
+
+## Usage
+
+### Adding a New Place
+1. Log in to your account.
+2. Navigate to the **"My Places"** page.
+3. Click the **"Add New Place"** button.
+4. Fill in the required details and upload photos.
+5. Click **Save** to list your place.
+
+### Booking a Place
+1. Browse the list of available places.
+2. Select a place that suits your needs.
+3. Choose your **check-in** and **check-out** dates.
+4. Confirm the booking.
+
+### Managing Bookings
+1. Go to the **"My Bookings"** page.
+2. View details of your current and past bookings.
+3. Cancel a booking if needed.
+
+## API Endpoints
+
+### Authentication:
+- **POST /register**: Register a new user.
+  - **Request Body**:
+    ```json
+    {
+      "name": "John Doe",
+      "email": "john@example.com",
+      "password": "password123"
+    }
+    ```
+  - **Response**: User object.
+
+- **POST /login**: Log in a user.
+  - **Request Body**:
+    ```json
+    {
+      "email": "john@example.com",
+      "password": "password123"
+    }
+    ```
+  - **Response**: User object and JWT token in a cookie.
+
+- **GET /profile**: Get the logged-in user's profile.
+  - **Response**: User object (name, email, ID).
+
+- **POST /logout**: Log out the user.
+  - **Response**: Success message.
+
+---
+
+### Places:
+- **POST /places**: Add a new place.
+  - **Request Body**:
+    ```json
+    {
+      "title": "Cozy Apartment",
+      "address": "123 Main St, City",
+      "photos": ["photo1.jpg", "photo2.jpg"],
+      "description": "A beautiful place to stay.",
+      "perks": ["WiFi", "Parking"],
+      "extraInfo": "No pets allowed.",
+      "checkIn": 14,
+      "checkOut": 11,
+      "maxGuests": 4,
+      "price": 100
+    }
+    ```
+  - **Response**: Place object.
+
+- **GET /places**: Get all places.
+  - **Response**: Array of place objects.
+
+- **GET /user-places**: Get all places owned by the logged-in user.
+  - **Response**: Array of place objects.
+
+- **GET /places/:id**: Get a specific place by its ID.
+  - **Response**: Place object.
+
+- **PUT /places**: Update an existing place.
+  - **Request Body**:
+    ```json
+    {
+      "id": "placeId",
+      "title": "Updated Title",
+      "address": "Updated Address",
+      "photos": ["updatedPhoto1.jpg"],
+      "description": "Updated description.",
+      "perks": ["WiFi"],
+      "extraInfo": "Updated info.",
+      "checkIn": 15,
+      "checkOut": 10,
+      "maxGuests": 3,
+      "price": 120
+    }
+    ```
+  - **Response**: Success message.
+
+- **DELETE /places/:id**: Delete a place by its ID.
+  - **Response**: Success message.
+
+---
+
+### Bookings:
+- **POST /bookings**: Create a new booking.
+  - **Request Body**:
+    ```json
+    {
+      "place": "placeId",
+      "checkIn": "2025-05-01",
+      "checkOut": "2025-05-05",
+      "numberOfGuests": 2,
+      "name": "John Doe",
+      "phone": "1234567890",
+      "price": 500
+    }
+    ```
+  - **Response**: Booking object.
+
+- **GET /bookings**: Get all bookings for the logged-in user.
+  - **Response**: Array of booking objects.
+
+---
+
+### Image Uploads:
+- **POST /upload-by-link**: Upload an image via a link.
+  - **Request Body**:
+    ```json
+    {
+      "link": "https://example.com/image.jpg"
+    }
+    ```
+  - **Response**: Uploaded image filename or URL.
+
+- **POST /upload**: Upload images from the client.
+  - **Request**: Multipart form data with images.
+  - **Response**: Array of uploaded image URLs.
+
+---
+
+### Miscellaneous:
+- **GET /test**: Test the server.
+  - **Response**: `"test ok"`
+
+## Future Improvements
+
+1. **Search Functionality**:
+   - Add a search bar to allow users to search for places by name, location, or keywords.
+
+2. **Advanced Filters**:
+   - Implement filters for price range, number of guests, amenities (WiFi, parking, etc.), and ratings.
+
+3. **Payment Integration**:
+   - Integrate payment gateways like GCASH or Maya for secure online payments.
+
+4. **User Reviews and Ratings**:
+   - Allow users to leave reviews and ratings for places they have booked.
+
+5. **Favorites/Wishlist**:
+   - Add a feature for users to save their favorite places for future reference.
+
+6. **Notifications**:
+   - Implement email or SMS notifications for booking confirmations, reminders, and updates.
+
+7. **Admin Dashboard**:
+   - Create an admin panel to manage users, places, and bookings more efficiently.
+
+8. **Multi-Language Support**:
+   - Add support for multiple languages to make the app accessible to a global audience.
+
+9. **Dark Mode**:
+   - Add a toggle for light/dark mode to enhance user experience.
+
+10. **Map Integration**:
+    - Integrate a map (e.g., Google Maps or Leaflet) to display the location of places visually.
+
+11. **Discounts and Promotions**:
+    - Allow hosts to offer discounts for specific dates or long stays.
+
+## Full Documentation
+
+For detailed documentation, including the technical details, and term paper, visit the link below:
+
+[StayConnect - CSDC105 Final Project Documentation](https://www.notion.so/StayConnect-CSDC105-Final-Project-Documentation-Term-Paper-1f057e3ff40681238c2ec6732a2da29a)
