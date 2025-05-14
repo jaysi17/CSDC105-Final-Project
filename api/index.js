@@ -30,7 +30,7 @@ app.use(cors({
     origin: 'http://localhost:5173'
 }));
 
-// Cloudinary config
+// Cloudinary configuration for image uploads
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -47,10 +47,12 @@ const storage = new CloudinaryStorage({
 });
 
 const uploadToCloud = multer({ storage: storage });
-
-
+//Connect to MongoDB
 mongoose.connect(process.env.MONGO_URL);
 
+// Helper function to extract user data from JWT token
+// This function verifies the token and retrieves user data
+// It returns a promise that resolves with the user data
 function getUserDataFromToken(req) {
     return new Promise((resolve, reject) => {
         jwt.verify(req.cookies.token, jwtSecret, {}, async (err, userData)=>{
@@ -60,10 +62,15 @@ function getUserDataFromToken(req) {
     })
 }
 
+// Test route to check if the server is running
 app.get('/test', (req, res) => {
     res.json('test ok')
 });
 
+
+// This route handles user registration
+// It creates a new user in the database with hashed password
+// It uses bcrypt to hash the password before saving it
 app.post('/register', async (req, res) => {
     const {name, email, password} = req.body;
 
@@ -80,6 +87,10 @@ app.post('/register', async (req, res) => {
     }
 })
 
+// User login route
+// This route handles user login and token generation
+// It checks if the user exists and verifies the password
+// If successful, it generates a JWT token and sends it back in a cookie
 app.post('/login', async (req, res) => {
     const {email, password} = req.body;
 
@@ -106,6 +117,9 @@ app.post('/login', async (req, res) => {
         }
 })
 
+// This route retrieves the user's profile information
+// It checks if the user is authenticated by verifying the JWT token
+// If the token is valid, it fetches the user's data from the database
 app.get('/profile', (req, res) => {
     const {token} = req.cookies;
     if (token) {
@@ -121,10 +135,18 @@ app.get('/profile', (req, res) => {
     } 
 })
 
+// This route handles user logout
+// It clears the JWT token from the cookies
+// This is done by setting the token cookie to an empty string
 app.post('/logout', (req, res) => {
     res.cookie('token', '').json(true);
 })
 
+
+// This route handles image uploads via a link
+// It downloads the image from the provided link and saves it to the server
+// If the link is a Cloudinary link, it returns the link as-is
+// Otherwise, it downloads the image and returns the new file name
 app.post('/upload-by-link', async (req, res) => {
     const {link} =  req.body;
     const newName = 'photo' + Date.now() + '.jpg';
@@ -143,20 +165,16 @@ app.post('/upload-by-link', async (req, res) => {
 
 const photosMiddleware = multer({dest: 'uploads'});
 
+// This route handles image uploads from the client
+// It uses multer to handle file uploads and saves them to the server
 app.post('/upload', uploadToCloud.array('photos', 100), (req, res) => {
     const uploadedFiles = req.files.map(file => file.path); // Cloudinary returns file.path as the URL    
-
-    // for(let i = 0; i <req.files.length; i++) {
-    //     const {path, originalname} = req.files[i];
-    //     const parts = originalname.split('.')
-    //     const ext = parts[parts.length - 1];
-    //     const newPath = path + '.' + ext;
-    //     fs.renameSync(path, newPath)
-    //     uploadedFiles.push(newPath.split('\\').pop().split('/').pop());
-    // }
     res.json(uploadedFiles);
 })
 
+// This route handles the creation of new places
+// It requires the user to be authenticated by verifying the JWT token
+// If the token is valid, it creates a new place in the database
 app.post('/places', async (req, res) => {
     const {token} = req.cookies;
             const {
@@ -178,6 +196,9 @@ app.post('/places', async (req, res) => {
     })
 })
 
+// This route retrieves all places owned by the authenticated user
+// It verifies the JWT token and fetches the places from the database
+// The places are filtered by the owner's ID
 app.get('/user-places', (req, res) => {
     const {token} = req.cookies;
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
@@ -186,11 +207,17 @@ app.get('/user-places', (req, res) => {
     })
 })
 
+// This route retrieves a specific place by its ID
+// It verifies the JWT token and fetches the place from the database
 app.get('/places/:_id', async (req, res) => {
     const {_id} = req.params;
     res.json(await Place.findById(_id));
 });
 
+// This route handles the update of an existing place
+// It verifies the JWT token and checks if the user is the owner of the place
+// If the user is the owner, it updates the place with the new data
+// It uses the set method to update only the fields that have changed
 app.put('/places', async (req, res) => {
     const{token} = req.cookies;
     const {
@@ -214,12 +241,15 @@ app.put('/places', async (req, res) => {
     })
 }) 
 
+// This route retrieves all places from the database
+// It fetches all places and returns them as a JSON response
 app.get('/places', async (req, res) => {
     res.json(await Place.find() )
 })
 
-//BOOKING FUNCTIONALITIES
-
+// This route handles the creation of new bookings
+// It verifies the JWT token and checks if the user is authenticated
+// If the token is valid, it creates a new booking in the database
 app.post('/bookings', async (req,res) => {
     const userData = await getUserDataFromToken(req);
     const {
@@ -234,6 +264,9 @@ app.post('/bookings', async (req,res) => {
     }) 
 })
 
+// This route retrieves all bookings for the authenticated user
+// It verifies the JWT token and fetches the bookings from the database
+// The bookings are filtered by the user's ID
 app.get('/bookings', async (req, res) => {
     const userData = await getUserDataFromToken(req);
     const bookings = await Booking.find({ user: userData._id }).populate('place'); // optional: populate place data
