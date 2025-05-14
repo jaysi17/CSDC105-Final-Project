@@ -109,6 +109,7 @@ This app is designed to be user-friendly and responsive, making it accessible on
 
 <pre> ## Folder Structure ```plaintext booking-app/ ├── api/ # Backend server │ ├── models/ # Database schemas │ │ ├── Booking.js # Booking model │ │ ├── Place.js # Vehicle listing model │ │ └── User.js # User model │ ├── uploads/ # Image storage │ ├── .env # Environment variables │ ├── index.js # Server entry point │ └── package.json # Backend dependencies │ └── client/ # Frontend React app ├── src/ │ ├── pages/ # Route components │ │ ├── BookingPage.jsx │ │ ├── BookingsPage.jsx │ │ ├── IndexPage.jsx │ │ ├── LoginPage.jsx │ │ ├── PlacePage.jsx │ │ ├── PlacesFormPage.jsx │ │ ├── PlacesPage.jsx │ │ ├── ProfilePage.jsx │ │ └── RegisterPage.jsx │ ├── components/ # Reusable components │ │ ├── BookingWidget.jsx │ │ ├── Header.jsx │ │ ├── Layout.jsx │ │ ├── Perks.jsx │ │ └── PhotosUploader.jsx │ ├── context/ # React context │ │ └── UserContext.jsx │ ├── App.jsx # Root component │ └── main.jsx # Entry point └── config/ # Frontend config files ├── vite.config.js └── tailwind.config.js ``` </pre>
 
+---
 
 ## Usage
 
@@ -129,6 +130,8 @@ This app is designed to be user-friendly and responsive, making it accessible on
 1. Go to the **"My Bookings"** page.
 2. View details of your current and past bookings.
 3. Cancel a booking if needed.
+
+---
 
 ## API Endpoints
 
@@ -289,6 +292,8 @@ This app is designed to be user-friendly and responsive, making it accessible on
 
 11. **Discounts and Promotions**:
     - Allow hosts to offer discounts for specific dates or long stays.
+
+---
 
 ## Full Documentation
 
