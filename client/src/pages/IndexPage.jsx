@@ -8,9 +8,11 @@ export default function IndexPage() {
     // State to hold the selected sort option
     const [sortOption, setSortOption] = useState("oldest"); // Default sort option
 
+    const API_URL = import.meta.env.API_URL;
+
     // Fetch places data from the server
     useEffect(() => {
-        axios.get('/places').then(response => {
+        axios.get(`${API_URL}/places`).then(response => {
             setPlaces(response.data);
         });
     }, []);
