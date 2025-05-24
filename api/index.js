@@ -83,10 +83,9 @@ function getUserDataFromToken(req) {
 }
 
 // Test route to check if the server is running
-app.get('/test', (req, res) => {
-    res.json('test ok')
+app.get('/', (req, res) => {
+    res.json('server is running');
 });
-
 
 // This route handles user registration
 // It creates a new user in the database with hashed password
