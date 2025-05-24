@@ -27,7 +27,7 @@ app.use(express.json()); //parser
 app.use(cookieParser())
 app.use(cors({
     credentials: true,
-    origin: 'https://stayconnect-eight.vercel.app'
+    origin: 'https://stayconnect-git-deployed-juan-carlos-medenillas-projects.vercel.app'
 }));
 
 // Cloudinary configuration for image uploads
