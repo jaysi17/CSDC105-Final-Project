@@ -73,10 +73,14 @@ app.use((err, req, res, next) => {
 // Helper function to extract user data from JWT token
 // This function verifies the token and retrieves user data
 // It returns a promise that resolves with the user data
+// If the token is missing or invalid, it rejects so the caller can respond with 401
 function getUserDataFromToken(req) {
     return new Promise((resolve, reject) => {
+        if (!req.cookies.token) {
+            return reject(new Error('No token provided'));
+        }
         jwt.verify(req.cookies.token, jwtSecret, {}, async (err, userData)=>{
-            if(err) throw err;
+            if(err) return reject(err);
             resolve(userData);
         })
     })
@@ -114,6 +118,9 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
     const {email, password} = req.body;
 
+    // Wrap DB and bcrypt calls in try/catch so unexpected errors return a response
+    // instead of leaving the request hanging
+    try {
         const userDoc = await User.findOne({email})
         if (userDoc) {
             const passOk = bcrypt.compareSync(password, userDoc.password) //checks if the input password when encrypted be the same as the pass of the user document
@@ -122,11 +129,17 @@ app.post('/login', async (req, res) => {
                     // Secret key — to make sure no one else can fake the token.
                     // SYNTAX = jwt.sign(payload, secret, options, callback)
                     jwt.sign({
-                        email:userDoc.email, 
+                        email:userDoc.email,
                         _id:userDoc._id
                     }, jwtSecret, {}, (err, token) => {
-                        if (err) throw err;
-                        res.cookie('token', token).json(userDoc)
+                        if (err) return res.status(500).json({ error: 'Failed to sign token' });
+                        // httpOnly prevents JS from reading the cookie (XSS protection)
+                        // sameSite: 'lax' makes the cookie reliably sent on cross-origin
+                        // requests from the Vite dev server (port 5173 → 4000)
+                        res.cookie('token', token, {
+                            httpOnly: true,
+                            sameSite: 'lax',
+                        }).json(userDoc)
                     })
                 }
                 else {
@@ -135,6 +148,9 @@ app.post('/login', async (req, res) => {
         } else {
             res.status(422).json('not found')
         }
+    } catch (e) {
+        res.status(500).json({ error: 'Login failed' });
+    }
 })
 
 // This route retrieves the user's profile information
@@ -144,22 +160,26 @@ app.get('/profile', (req, res) => {
     const {token} = req.cookies;
     if (token) {
         jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+            // Throwing inside this async callback won't reach Express's error handler,
+            // so we respond explicitly with 401 instead
             if (err) {
-                throw err;
+                return res.status(401).json({ error: 'Invalid token' });
             }
             const {name, email, _id} = await User.findById(userData._id);
             res.json({name, email, _id})
         })
     } else {
      res.json(null)
-    } 
+    }
 })
 
 // This route handles user logout
 // It clears the JWT token from the cookies
 // This is done by setting the token cookie to an empty string
 app.post('/logout', (req, res) => {
-    res.cookie('token', '').json(true);
+    // clearCookie removes the cookie from the browser instead of just setting it
+    // to an empty string, which some browsers may keep around
+    res.clearCookie('token').json(true);
 })
 
 
@@ -197,18 +217,21 @@ app.post('/upload', uploadToCloud.array('photos', 100), (req, res) => {
 // If the token is valid, it creates a new place in the database
 app.post('/places', async (req, res) => {
     const {token} = req.cookies;
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
             const {
-                title, address, photos, 
+                title, address, photos,
                 description, perks, extraInfo,
                 checkIn, checkOut, maxGuests, price
             } = req.body;
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
         if (err) {
-            throw err;
+            return res.status(401).json({ error: 'Invalid token' });
         }
         const placeDoc = await Place.create({
             owner: userData._id,
-            title, address, photos, 
+            title, address, photos,
             description, perks, extraInfo,
             checkIn, checkOut, maxGuests, price
         });
@@ -221,7 +244,15 @@ app.post('/places', async (req, res) => {
 // The places are filtered by the owner's ID
 app.get('/user-places', (req, res) => {
     const {token} = req.cookies;
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+        // Without this check, an invalid token leaves userData undefined
+        // and the destructure below crashes the route
+        if (err) {
+            return res.status(401).json({ error: 'Invalid token' });
+        }
         const {_id} = userData;
         res.json(await Place.find({owner:_id}));
     })
@@ -240,26 +271,34 @@ app.get('/places/:_id', async (req, res) => {
 // It uses the set method to update only the fields that have changed
 app.put('/places', async (req, res) => {
     const{token} = req.cookies;
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
     const {
             id,
-            title, address, photos, 
+            title, address, photos,
             description, perks, extraInfo,
             checkIn, checkOut, maxGuests, price
     } = req.body;
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+        if (err) {
+            return res.status(401).json({ error: 'Invalid token' });
+        }
         const placeDoc = await Place.findById(id)
-        if(err) throw err;
         if (userData._id === placeDoc.owner.toString()) {
             placeDoc.set({
-                title, address, photos, 
+                title, address, photos,
                 description, perks, extraInfo,
                 checkIn, checkOut, maxGuests, price
             })
             await placeDoc.save();
             res.json('ok')
+        } else {
+            // Without this branch the request hangs when the user is not the owner
+            res.status(403).json({ error: 'You are not authorized to update this place' });
         }
     })
-}) 
+})
 
 // This route retrieves all places from the database
 // It fetches all places and returns them as a JSON response
@@ -271,7 +310,14 @@ app.get('/places', async (req, res) => {
 // It verifies the JWT token and checks if the user is authenticated
 // If the token is valid, it creates a new booking in the database
 app.post('/bookings', async (req,res) => {
-    const userData = await getUserDataFromToken(req);
+    // Catch the rejection from getUserDataFromToken so a missing or invalid
+    // token returns 401 instead of becoming an unhandled promise rejection
+    let userData;
+    try {
+        userData = await getUserDataFromToken(req);
+    } catch (e) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
     const {
         place, checkIn, checkOut, numberOfGuests, name, phone, price
     } = req.body;
@@ -280,15 +326,22 @@ app.post('/bookings', async (req,res) => {
     }).then((doc) => {
         res.json(doc)
     }).catch((err) => {
-        throw err;
-    }) 
+        res.status(500).json({ error: 'Failed to create booking' });
+    })
 })
 
 // This route retrieves all bookings for the authenticated user
 // It verifies the JWT token and fetches the bookings from the database
 // The bookings are filtered by the user's ID
 app.get('/bookings', async (req, res) => {
-    const userData = await getUserDataFromToken(req);
+    // Same defensive pattern as POST /bookings: a missing/invalid token
+    // should return 401 rather than crash the request
+    let userData;
+    try {
+        userData = await getUserDataFromToken(req);
+    } catch (e) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
     const bookings = await Booking.find({ user: userData._id }).populate('place'); // optional: populate place data
     res.json(bookings);
 });
