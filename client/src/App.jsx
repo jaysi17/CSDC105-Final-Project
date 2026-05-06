@@ -17,7 +17,10 @@ import BookingPage from './pages/BookingPage.jsx';
 
 // Set the base URL for axios requests
 // This is the URL of the backend server
-axios.defaults.baseURL = 'http://localhost:4000'
+// VITE_API_URL is baked in at build time — set it in Render's environment
+// before building (e.g. https://your-api.onrender.com). Falls back to the
+// local Express server for development.
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 axios.defaults.withCredentials = true;
 
 function App() {
