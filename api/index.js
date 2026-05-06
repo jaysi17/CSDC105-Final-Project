@@ -25,10 +25,22 @@ const jwtSecret = '9f3hfreunuvnreg93jg8revufh8924f20'
 app.use('/uploads', express.static(__dirname+'/uploads'))
 app.use(express.json()); //parser
 app.use(cookieParser())
+// CLIENT_ORIGIN is set in Render to the deployed frontend URL
+// Locally it falls back to the Vite dev server
 app.use(cors({
     credentials: true,
-    origin: 'http://localhost:5173'
+    origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173'
 }));
+
+// In production the API and client live on different domains, so the auth
+// cookie needs sameSite: 'none' (cross-site) and secure: true (HTTPS only).
+// In development we keep sameSite: 'lax' so it works over plain http://localhost.
+const isProd = process.env.NODE_ENV === 'production';
+const cookieOptions = {
+    httpOnly: true,
+    sameSite: isProd ? 'none' : 'lax',
+    secure: isProd,
+};
 
 // Cloudinary configuration for image uploads
 cloudinary.config({
@@ -133,13 +145,9 @@ app.post('/login', async (req, res) => {
                         _id:userDoc._id
                     }, jwtSecret, {}, (err, token) => {
                         if (err) return res.status(500).json({ error: 'Failed to sign token' });
-                        // httpOnly prevents JS from reading the cookie (XSS protection)
-                        // sameSite: 'lax' makes the cookie reliably sent on cross-origin
-                        // requests from the Vite dev server (port 5173 → 4000)
-                        res.cookie('token', token, {
-                            httpOnly: true,
-                            sameSite: 'lax',
-                        }).json(userDoc)
+                        // Cookie flags come from cookieOptions (env-aware).
+                        // httpOnly prevents JS from reading the cookie (XSS protection).
+                        res.cookie('token', token, cookieOptions).json(userDoc)
                     })
                 }
                 else {
@@ -177,9 +185,9 @@ app.get('/profile', (req, res) => {
 // It clears the JWT token from the cookies
 // This is done by setting the token cookie to an empty string
 app.post('/logout', (req, res) => {
-    // clearCookie removes the cookie from the browser instead of just setting it
-    // to an empty string, which some browsers may keep around
-    res.clearCookie('token').json(true);
+    // clearCookie must use the same flags as the cookie was set with,
+    // otherwise the browser will not consider it the same cookie and won't clear it
+    res.clearCookie('token', cookieOptions).json(true);
 })
 
 
