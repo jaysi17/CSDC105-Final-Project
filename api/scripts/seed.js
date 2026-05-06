@@ -16,10 +16,16 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const User = require('../models/User.js');
 const Place = require('../models/Place.js');
+const Booking = require('../models/Booking.js');
 
 const DEMO_EMAIL = 'demo@stayconnect.com';
 const DEMO_NAME = 'StayConnect Demo';
 const DEMO_PASSWORD = 'demo123';
+
+const GUEST_EMAIL = 'guest@stayconnect.com';
+const GUEST_NAME = 'Maria Reyes';
+const GUEST_PASSWORD = 'guest123';
+const GUEST_PHONE = '+63 917 555 0142';
 
 // Photos use direct Unsplash URLs. The existing photo handler in
 // client/src/PlaceImg.jsx and the IndexPage check `startsWith('http')` and
@@ -146,6 +152,54 @@ const MOCK_PLACES = [
     },
 ];
 
+// Bookings made by the guest user against the demo user's places. Each entry
+// references a place by title (looked up after places are inserted) so the
+// data stays readable. Mix of past and upcoming dates relative to mid-2026
+// gives the bookings page both "history" and "current" rows for demos.
+const MOCK_BOOKINGS = [
+    {
+        placeTitle: 'Modern Studio in BGC',
+        checkIn: '2026-02-10',
+        checkOut: '2026-02-12',
+        numberOfGuests: 1,
+    },
+    {
+        placeTitle: 'Cozy Mountain Cabin in Baguio',
+        checkIn: '2026-03-20',
+        checkOut: '2026-03-22',
+        numberOfGuests: 2,
+    },
+    {
+        placeTitle: 'Heritage House in Vigan',
+        checkIn: '2026-04-05',
+        checkOut: '2026-04-08',
+        numberOfGuests: 4,
+    },
+    {
+        placeTitle: 'Beachfront Villa in El Nido',
+        checkIn: '2026-05-15',
+        checkOut: '2026-05-19',
+        numberOfGuests: 4,
+    },
+    {
+        placeTitle: 'Lakefront Cottage in Tagaytay',
+        checkIn: '2026-06-12',
+        checkOut: '2026-06-14',
+        numberOfGuests: 3,
+    },
+    {
+        placeTitle: 'Cliffside Suite in Boracay',
+        checkIn: '2026-07-20',
+        checkOut: '2026-07-25',
+        numberOfGuests: 2,
+    },
+];
+
+function nightsBetween(checkIn, checkOut) {
+    const ms = new Date(checkOut).getTime() - new Date(checkIn).getTime();
+    return Math.round(ms / (1000 * 60 * 60 * 24));
+}
+
 async function main() {
     const reset = process.argv.includes('--reset');
 
@@ -169,24 +223,73 @@ async function main() {
         console.log(`Demo user already exists: ${DEMO_EMAIL}`);
     }
 
-    if (reset) {
-        const { deletedCount } = await Place.deleteMany({ owner: demoUser._id });
-        console.log(`--reset: deleted ${deletedCount} existing demo place(s)`);
+    let guestUser = await User.findOne({ email: GUEST_EMAIL });
+    if (!guestUser) {
+        guestUser = await User.create({
+            name: GUEST_NAME,
+            email: GUEST_EMAIL,
+            password: bcrypt.hashSync(GUEST_PASSWORD, bcrypt.genSaltSync(10)),
+        });
+        console.log(`Created guest user: ${GUEST_EMAIL} / ${GUEST_PASSWORD}`);
+    } else {
+        console.log(`Guest user already exists: ${GUEST_EMAIL}`);
     }
 
-    let inserted = 0;
-    let skipped = 0;
+    if (reset) {
+        // Reset deletes guest's bookings before demo's places, otherwise the
+        // bookings would orphan their `place` ref the moment the places drop.
+        const { deletedCount: deletedBookings } = await Booking.deleteMany({ user: guestUser._id });
+        const { deletedCount: deletedPlaces } = await Place.deleteMany({ owner: demoUser._id });
+        console.log(`--reset: deleted ${deletedBookings} booking(s) and ${deletedPlaces} place(s)`);
+    }
+
+    let insertedPlaces = 0;
+    let skippedPlaces = 0;
     for (const place of MOCK_PLACES) {
         const exists = await Place.findOne({ owner: demoUser._id, title: place.title });
         if (exists) {
-            skipped++;
+            skippedPlaces++;
             continue;
         }
         await Place.create({ ...place, owner: demoUser._id });
-        inserted++;
+        insertedPlaces++;
     }
+    console.log(`Inserted ${insertedPlaces} place(s), skipped ${skippedPlaces} duplicate(s).`);
 
-    console.log(`Inserted ${inserted} place(s), skipped ${skipped} duplicate(s).`);
+    let insertedBookings = 0;
+    let skippedBookings = 0;
+    for (const booking of MOCK_BOOKINGS) {
+        const placeDoc = await Place.findOne({ owner: demoUser._id, title: booking.placeTitle });
+        if (!placeDoc) {
+            console.warn(`  skipping booking: place "${booking.placeTitle}" not found`);
+            continue;
+        }
+        // Idempotency key — a guest booking the same place starting on the same
+        // day twice is what we want to dedupe.
+        const exists = await Booking.findOne({
+            user: guestUser._id,
+            place: placeDoc._id,
+            checkIn: new Date(booking.checkIn),
+        });
+        if (exists) {
+            skippedBookings++;
+            continue;
+        }
+        const nights = nightsBetween(booking.checkIn, booking.checkOut);
+        await Booking.create({
+            user: guestUser._id,
+            place: placeDoc._id,
+            checkIn: new Date(booking.checkIn),
+            checkOut: new Date(booking.checkOut),
+            name: GUEST_NAME,
+            phone: GUEST_PHONE,
+            numberOfGuests: booking.numberOfGuests,
+            price: nights * placeDoc.price,
+        });
+        insertedBookings++;
+    }
+    console.log(`Inserted ${insertedBookings} booking(s), skipped ${skippedBookings} duplicate(s).`);
+
     console.log('Done.');
     await mongoose.disconnect();
 }
