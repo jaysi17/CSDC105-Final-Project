@@ -38,8 +38,8 @@ export default function IndexPage() {
 
     return (
         <>  
-            <div className="flex items-center justify-between flex-col md:flex-row lg:flex-row px-4 mt-10">    
-                <div className="mt-8 px-4">
+            <div className="flex items-center justify-between flex-col md:flex-row lg:flex-row px-4 mt-4 md:mt-10">
+                <div className="mt-2 md:mt-8 px-4">
                     <h1 className="font-bold mb-2 text-3xl md:text-4xl lg:text-5xl">Find your next stay</h1>
                     <h3 className="text-xl md:text-2xl lg:text-3xl">Search low prices on hotels, homes, and much more...</h3>
                 </div>
