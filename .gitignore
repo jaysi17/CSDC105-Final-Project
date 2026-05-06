@@ -1,0 +1,5 @@
+CLAUDE.md
+
+# Secrets — never commit
+.env
+.env.*
