@@ -6,10 +6,13 @@ export default function Header() {
   const { user } = useContext(UserContext);
 
   return (
-    <header className="w-full bg-gradient-to-r from-[#1746a2] via-[#2563eb] to-[#1746a2] shadow-lg py-3 px-2 md:px-8">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+    <header className="w-full bg-gradient-to-r from-[#1746a2] via-[#2563eb] to-[#1746a2] shadow-lg py-3 px-4 md:px-8">
+      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 text-white font-extrabold text-2xl tracking-tight hover:scale-105 transition-transform">
+        <Link
+          to="/"
+          className="order-1 flex items-center gap-2 text-white font-extrabold text-2xl tracking-tight hover:scale-105 transition-transform"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -27,43 +30,10 @@ export default function Header() {
           <span className="shadow text-blue-100">StayConnect</span>
         </Link>
 
-        {/* Search bar */}
-        <form
-          className="hidden md:flex items-center gap-2 bg-white bg-opacity-90 border-2 border-blue-400 rounded-full px-4 py-2 shadow-md focus-within:ring-2 focus-within:ring-blue-300 transition"
-          onSubmit={e => {
-            e.preventDefault();
-            const query = e.target.elements.search?.value.trim();
-            if (query) window.location.href = `/search?query=${encodeURIComponent(query)}`;
-          }}
-        >
-          <input
-            name="search"
-            type="text"
-            placeholder="Search destinations"
-            className="bg-transparent outline-none text-blue-700 placeholder-blue-400 w-32 md:w-44"
-          />
-          <button
-            type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-2 shadow transition"
-            aria-label="Search"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.2-5.2M16.5 15.8a7.5 7.5 0 1 0-1.3 1.3L21 21Z" />
-            </svg>
-          </button>
-        </form>
-
-        {/* User Menu */}
+        {/* User Menu — right on top row (mobile), far right (desktop) */}
         <Link
           to={user ? "/account" : "/login"}
-          className="flex items-center gap-2 bg-white bg-opacity-90 border-2 border-blue-400 rounded-full px-4 py-2 shadow-md hover:bg-blue-600 hover:text-white transition-all"
+          className="order-2 md:order-3 flex items-center gap-2 bg-white bg-opacity-90 border-2 border-blue-400 rounded-full px-4 py-2 shadow-md hover:bg-blue-600 hover:text-white transition-all"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -90,6 +60,39 @@ export default function Header() {
           </div>
           {user && <span className="text-sm font-semibold text-blue-700 group-hover:text-white">{user.name}</span>}
         </Link>
+
+        {/* Search bar — full-width second row on mobile, centered between logo & menu on desktop */}
+        <form
+          className="order-3 md:order-2 w-full md:w-auto flex items-center gap-2 bg-white bg-opacity-90 rounded-full px-4 py-2 shadow-md focus-within:ring-2 focus-within:ring-blue-300 transition"
+          onSubmit={e => {
+            e.preventDefault();
+            const query = e.target.elements.search?.value.trim();
+            if (query) window.location.href = `/search?query=${encodeURIComponent(query)}`;
+          }}
+        >
+          <input
+            name="search"
+            type="text"
+            placeholder="Search destinations"
+            className="flex-1 min-w-0 md:flex-initial md:w-44 bg-transparent border-0! my-0! py-0! px-0! outline-none focus:ring-0 text-blue-700 placeholder-blue-400"
+          />
+          <button
+            type="submit"
+            className="shrink-0 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-2 shadow transition"
+            aria-label="Search"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.2-5.2M16.5 15.8a7.5 7.5 0 1 0-1.3 1.3L21 21Z" />
+            </svg>
+          </button>
+        </form>
       </div>
     </header>
   );
